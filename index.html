@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PRIMULA COSTRUZIONI HIGHLIGHT</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Widgets/widgets.css"
+          rel="stylesheet" />
+
+    <link rel="stylesheet" href="style.css?v=20260327-intro-layout" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-left">
+            <div class="site-brand">PRIMULA COSTRUZIONI</div>
+        </div>
+
+        <nav class="top-nav">
+            <a href="#intro">Intro</a>
+            <a href="#viewer">Viewer</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="intro-section" id="intro">
+            <video class="intro-video"
+                   autoplay
+                   muted
+                   loop
+                   playsinline
+                   preload="auto">
+                <source src="assets/video/intro.mp4" type="video/mp4" />
+            </video>
+
+            <div class="intro-overlay"></div>
+
+            <div class="intro-content">
+                <p class="eyebrow">Operazione immobiliare</p>
+                <h1 class="intro-title">
+                    <span>PRIMULA</span>
+                    <span>COSTRUZIONI</span>
+                    <span>HIGHLIGHT</span>
+                </h1>
+                <p class="intro-text">
+                    Un viewer immersivo per esplorare le nostre operazioni immobiliari in modo diretto e spaziale.
+                </p>
+
+                <div class="intro-actions">
+                    <a href="#viewer" id="enterViewerButton" class="cta-primary">Entra nel viewer</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="viewer-section" id="viewer">
+            <div id="cesiumContainer"></div>
+
+            <aside id="operationsMenu" class="operations-menu">
+                <button id="operationsMenuToggle"
+                        class="operations-menu-toggle"
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="operationsMenuPanel">
+                    <span class="operations-menu-title">TUTTE LE OPERAZIONI IMMOBILIARI</span>
+                    <span class="operations-menu-arrow" aria-hidden="true">+</span>
+                </button>
+
+                <div id="operationsMenuPanel" class="operations-menu-panel hidden">
+                    <div class="operations-menu-head">
+                        <div class="operations-menu-kicker">Elenco poligoni</div>
+                    </div>
+
+                    <div id="polygonButtonsList" class="polygon-buttons-list">
+                        <!-- Bottoni creati da main.js -->
+                    </div>
+                </div>
+            </aside>
+
+            <button id="homeViewButton"
+                    class="camera-home-button hidden"
+                    type="button"
+                    aria-label="Torna alla vista hub">
+                Torna alla vista hub
+            </button>
+
+            <div id="infoPanel" class="info-panel hidden">
+                <button id="closePanel" aria-label="Chiudi pannello">✕</button>
+
+                <div class="info-panel-header">
+                    <div class="info-eyebrow" id="infoEyebrow">Dettaglio</div>
+                    <h2 id="lotTitle">Lotto</h2>
+                </div>
+
+                <div id="infoPanelBody"></div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="main.js?v=20260327-intro-layout"></script>
+</body>
+</html>
