@@ -134,15 +134,34 @@ function enterFreeCameraMode() {
     currentOrbitTarget = null;
 
     viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
-    viewer.camera.setView(initialCameraView);
+    controller.enableInputs = false;
 
-    syncViewerControls();
+    closeInfoPanel();
 
-    if (homeViewButton) {
-        homeViewButton.classList.add("hidden");
-    }
+    viewer.camera.flyTo({
+        destination: initialCameraView.destination,
+        orientation: initialCameraView.orientation,
+        duration: 2.8,
+        easingFunction: Cesium.EasingFunction.QUADRATIC_IN_OUT,
+        complete: () => {
+            syncViewerControls();
 
-    setActivePolygonMenuButton("");
+            if (homeViewButton) {
+                homeViewButton.classList.add("hidden");
+            }
+
+            setActivePolygonMenuButton("");
+        },
+        cancel: () => {
+            syncViewerControls();
+
+            if (homeViewButton) {
+                homeViewButton.classList.add("hidden");
+            }
+
+            setActivePolygonMenuButton("");
+        }
+    });
 }
 
 function focusPolygonAndLockView(entity) {
