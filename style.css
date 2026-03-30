@@ -11,7 +11,7 @@
     --header-h: 78px;
     --transition: 0.28s ease;
     --panel-scroll-w: 8px;
-    --panel-scroll-offset: 29px;
+    --panel-scroll-offset: 15px;
 }
 
 * {
@@ -339,9 +339,11 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: none;
-    overflow: visible;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
     min-height: 0;
+    overflow: visible;
 }
 
 .polygon-list-button {
