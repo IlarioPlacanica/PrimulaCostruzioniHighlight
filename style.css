@@ -11,7 +11,7 @@
     --header-h: 78px;
     --transition: 0.28s ease;
     --panel-scroll-w: 8px;
-    --panel-scroll-offset: 25px;
+    --panel-scroll-offset: 29px;
 }
 
 * {
@@ -402,8 +402,8 @@ h1 {
 
 .info-panel h2 {
     margin: 0;
-    font-size: 3.2rem;
-    line-height: 1;
+    font-size: 2.6rem;
+    line-height: 0.9;
     letter-spacing: -0.04rem;
     font-weight: 500;
 }
@@ -765,7 +765,7 @@ h1 {
     }
 
         .info-panel h2 {
-            font-size: 1.3rem;
+            font-size: 1.15rem;
         }
 
     .category-summary {
