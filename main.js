@@ -1192,6 +1192,147 @@ viewer.entities.add({
     }
 });
 
+viewer.entities.add({
+    id: "Betulle1",
+    name: "Betulle 1",
+    polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+            7.7196593529471125, 45.18305735304931, 315,
+            7.719780022404747, 45.183259120469586, 315,
+            7.719811648675973, 45.18332981468679, 315,
+            7.719850305316958, 45.183423325413585, 315,
+            7.719907512146784, 45.183557497819805, 315,
+            7.719941102900807, 45.18366256411796, 315,
+            7.719960148846169, 45.18375980384026, 315,
+            7.720001532689547, 45.18391320972729, 315,
+            7.720009103684815, 45.18395165410968, 315,
+            7.720024144963868, 45.18402857276477, 315,
+            7.7200406874227845, 45.18411278991568, 315,
+            7.7200626062500906, 45.184224483180664, 315,
+            7.720070503860997, 45.18429585642793, 315,
+            7.7200817506052, 45.18443475089855, 315,
+            7.720098110697111, 45.18462555584223, 315,
+            7.720103011909091, 45.18469179000765, 315,
+            7.7201448585989345, 45.18474000706714, 315,
+            7.720186075651889, 45.184744078609015, 315,
+            7.7202338974689, 45.18476379767505, 315,
+            7.720283444770689, 45.18478405462445, 315,
+            7.720325869586049, 45.18482511286925, 315,
+            7.720351587405987, 45.184848037399775, 315,
+            7.720372371394186, 45.184893096194244, 315,
+            7.721506728065749, 45.18486429898128, 315,
+            7.721438644767417, 45.18458346254746, 315,
+            7.721402363562325, 45.18441556041859, 315,
+            7.721375708144242, 45.18423636154434, 315,
+            7.7211435317534685, 45.182953571526085, 315,
+            7.721055192636664, 45.18267441186636, 315
+
+
+        ]),
+        material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.BLUE.withAlpha(0.2)
+        ),
+        perPositionHeight: true,
+        extrudedHeight: 280,
+        outline: false
+    },
+    properties: {
+        immagine: "assets/img/betulle_1.jpg",
+        investimentiPartnership: "Prop trading",
+        surface: " 90.000 m²",
+        apartments: " 452",
+        trackRecord: " 82.000.000 €",
+        icona: "assets/icons/betulle.png",
+        descrizione: `Residential complex within a territorial planning
+                        intervention, which defines the skyline of Leinì. The urban
+                        center of the metropolitan city of Turin in recent years has
+                        developed strongly, becoming a new large residential
+                        center, due to our building of more than 90000 m² for a
+                        total of 452 apartments, 46 stores and 545 boxes and 1
+                        supermarket of 2200 m².
+                        The district includes different housing solutions: some
+                        with large garden in the open countryside, others with
+                        panoramic terraces on the Alps mountain range.`
+    }
+});
+
+viewer.entities.add({
+    id: "Betulle2",
+    name: "Betulle 2",
+    polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+                7.719841939983819, 45.18071376497135, 315,
+                7.71866200055144, 45.18103676104945, 315,
+                7.718617787682093, 45.18103825619338, 315,
+                7.718537778803328, 45.18102955349827, 315,
+                7.71849527267995, 45.18101303921736, 315,
+                7.71843599940826, 45.180975339554365, 315,
+                7.718317803871925, 45.180912592414444, 315,
+                7.718059074210685, 45.180707663606114, 315,
+                7.717924207207346, 45.180592702490884, 315,
+                7.717844990799606, 45.18054354376526, 315,
+                7.71772186262885, 45.18047490115032, 315,
+                7.717615626488032, 45.18042048480184, 315,
+                7.7174459577284065, 45.1803320013775, 315,
+                7.7173206669902745, 45.18027288704596, 315,
+                7.717197814280216, 45.18021303701967, 315,
+                7.717079369073502, 45.18017311730605, 315,
+                7.716996863222489, 45.180144524924685, 315,
+                7.717095708505585, 45.17982945195777, 315,
+                7.717171201457099, 45.17965818121151, 315,
+                7.717222437362741, 45.179426505478375, 315,
+                7.717237878341116, 45.17930972026463, 315,
+                7.71726330613814, 45.17919593400195, 315,
+                7.717300986597008, 45.179092388723845, 315,
+                7.71729632754488, 45.17895837632175, 315,
+                7.717295355054543, 45.1788807830123, 315,
+                7.717260574378268, 45.17880813746501, 315,
+                7.717296570425615, 45.17876379364835, 315,
+                7.717349159429455, 45.17874920554517, 315,
+                7.717469724222185, 45.17877959512973, 315,
+                7.717572135091958, 45.17879565719509, 315,
+                7.717671335771197, 45.17881572145123, 315,
+                7.7177542224323314, 45.178839144651946, 315,
+                7.717836356607362, 45.17885102238529, 315,
+                7.717938983379119, 45.178881917330436, 315,
+                7.718053889239331, 45.17891424646855, 315,
+                7.718152792303451, 45.178945007874525, 315,
+                7.718287334954889, 45.178990871038714, 315,
+                7.718427374231812, 45.179044749963474, 315,
+                7.718570503509988, 45.17910337417436, 315,
+                7.718721014987454, 45.17916788204561, 315,
+                7.718851911206131, 45.1792290334548, 315,
+                7.7189586154438725, 45.17929427475745, 315,
+                7.719037993440974, 45.17933901781094, 315
+
+        ]),
+        material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.BLUE.withAlpha(0.2)
+        ),
+        perPositionHeight: true,
+        extrudedHeight: 280,
+        outline: false
+    },
+    properties: {
+        immagine: "assets/img/betulle_2.jpg",
+        investimentiPartnership: "Prop trading",
+        surface: " 90.000 m²",
+        apartments: " 452",
+        trackRecord: " 82.000.000 €",
+        icona: "assets/icons/betulle.png",
+        descrizione: `Residential complex within a territorial planning
+                        intervention, which defines the skyline of Leinì. The urban
+                        center of the metropolitan city of Turin in recent years has
+                        developed strongly, becoming a new large residential
+                        center, due to our building of more than 90000 m² for a
+                        total of 452 apartments, 46 stores and 545 boxes and 1
+                        supermarket of 2200 m².
+                        The district includes different housing solutions: some
+                        with large garden in the open countryside, others with
+                        panoramic terraces on the Alps mountain range.`
+    }
+});
+
 
 addLabelsToAllLotti();
 window.addEventListener("resize", applyLotLabelResponsiveStyles);
