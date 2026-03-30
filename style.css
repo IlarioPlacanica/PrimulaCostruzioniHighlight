@@ -7,7 +7,7 @@
     --text: #f5f3ef;
     --text-soft: rgba(255, 255, 255, 0.72);
     --text-muted: #a8adb7;
-    --gold: #d1b07a;
+    --accent: #99B5BB;
     --header-h: 78px;
     --transition: 0.28s ease;
 }
@@ -128,10 +128,10 @@ video {
 .info-eyebrow,
 .operations-menu-kicker {
     margin: 0 0 14px;
-    color: var(--gold);
+    color: var(--accent);
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    font-size: 0.78rem;
+    font-size: 1.2rem;
 }
 
 h1,
@@ -168,7 +168,7 @@ h1 {
     max-width: 680px;
     color: rgba(255, 255, 255, 0.82);
     line-height: 1.7;
-    font-size: 1rem;
+    font-size: 1.35rem;
 }
 
 .intro-actions {
@@ -179,14 +179,64 @@ h1 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 52px;
+    min-height: 65px;
     padding: 0 22px;
-    background: linear-gradient(135deg, #d1b07a, #e0c38f);
+    background: linear-gradient(135deg, #99B5BB 0%, #B7CDD1 100%);
     color: #111;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
+
+/* ===== FULLSCREEN ===== */
+
+.cesium-viewer-fullscreenContainer {
+    position: absolute;
+    left: 50px;
+    bottom: 50px;
+    top: auto;
+    right: auto;
+    z-index: 70;
+    width: 45px;
+    height: 45px;
+    background: rgba(8, 10, 13, 0.88);
+    border: 1px solid var(--line);
+    border-radius: 0 !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+    .cesium-viewer-fullscreenContainer .cesium-button.cesium-fullscreenButton,
+    .cesium-fullscreenButton {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+        .cesium-viewer-fullscreenContainer .cesium-button.cesium-fullscreenButton svg,
+        .cesium-fullscreenButton svg {
+            width: 20px !important;
+            height: 20px !important;
+            min-width: 16px !important;
+            min-height: 16px !important;
+            transform: none !important;
+            margin: 0 !important;
+            display: flex !important;
+        }
 
 /* ===== VIEWER ===== */
 
@@ -277,8 +327,8 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: min(420px, calc(100vh - 320px));
-    overflow-y: auto;
+    max-height: none;
+    overflow: visible;
 }
 
     .polygon-buttons-list::-webkit-scrollbar {
@@ -310,9 +360,9 @@ h1 {
     }
 
     .polygon-list-button.is-active {
-        background: rgba(209, 176, 122, 0.14);
+        background: rgba(153, 181, 187, 0.22);
         color: #fff;
-        border-color: rgba(209, 176, 122, 0.34);
+        border-color: rgba(153, 181, 187, 0.5);
     }
 
 /* ===== INFO PANEL ===== */
@@ -321,9 +371,10 @@ h1 {
     position: absolute;
     top: calc(var(--header-h) + 24px);
     right: 24px;
-    bottom: 24px;
+
     width: 480px;
-    overflow-y: auto;
+    max-width: calc(100vw - 48px);
+    overflow: visible;
     background: var(--panel);
     color: var(--text);
     padding: 28px;
@@ -344,7 +395,7 @@ h1 {
 
 .info-panel h2 {
     margin: 0;
-    font-size: 2.7rem;
+    font-size: 3.2rem;
     line-height: 1;
     letter-spacing: -0.04rem;
     font-weight: 500;
@@ -406,13 +457,13 @@ h1 {
 
     .info-row span {
         color: var(--text-soft);
-        font-size: 0.82rem;
+        font-size: 1rem;
         line-height: 1.5;
     }
 
     .info-row strong {
         color: var(--text);
-        font-size: 0.88rem;
+        font-size: 1.1rem;
         line-height: 1.5;
         font-weight: 600;
         text-align: right;
@@ -468,6 +519,7 @@ h1 {
 
 .info-image-wrap {
     width: 100%;
+    height: 260px;
     margin-bottom: 14px;
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.03);
@@ -477,7 +529,7 @@ h1 {
 .info-image {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: cover;
 }
 
@@ -490,7 +542,7 @@ h1 {
 
     .info-text-block span {
         color: var(--text-soft);
-        font-size: 0.82rem;
+        font-size: 1rem;
         line-height: 1.5;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -500,7 +552,7 @@ h1 {
         margin: 0;
         color: var(--text);
         line-height: 1.7;
-        font-size: 0.92rem;
+        font-size: 1.08rem;
     }
 
 /* ===== FILTERS ===== */

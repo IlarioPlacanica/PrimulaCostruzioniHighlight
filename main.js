@@ -1,5 +1,7 @@
 Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzMDMzYWFiYy03NmQ2LTQ1Y2ItOTIxMC00YTlhNWJiOTczYTEiLCJpZCI6MjI5OTIwLCJpYXQiOjE3MzUxNDI5ODN9.5JsxkFNj9aTyDXASAq5If6K6oQmBRtw4-xzKA0-ksec";
 
+const viewerSection = document.getElementById("viewer");
+
 const viewer = new Cesium.Viewer("cesiumContainer", {
     timeline: false,
     animation: false,
@@ -9,6 +11,7 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
     sceneModePicker: false,
     navigationHelpButton: false,
     fullscreenButton: true,
+    fullscreenElement: viewerSection,
     infoBox: false,
     selectionIndicator: false,
     globe: false
@@ -60,7 +63,8 @@ let isViewerUnlocked = false;
 
 let orbitHeading = Cesium.Math.toRadians(55);
 let orbitPitch = Cesium.Math.toRadians(-35);
-let orbitRange = 260;
+const defaultOrbitRange = 150;
+let orbitRange = defaultOrbitRange;
 
 const minPitch = Cesium.Math.toRadians(-80);
 const maxPitch = Cesium.Math.toRadians(-10);
@@ -69,13 +73,13 @@ const maxRange = 900;
 
 const initialCameraView = {
     destination: Cesium.Cartesian3.fromDegrees(
-        7.6858472,
-        45.0709417,
-        4500
+        7.683707690243468,
+        45.04866692889891,
+        1000
     ),
     orientation: {
-        heading: Cesium.Math.toRadians(25),
-        pitch: Cesium.Math.toRadians(-89),
+        heading: Cesium.Math.toRadians(-10),
+        pitch: Cesium.Math.toRadians(-20),
         roll: 0
     }
 };
@@ -171,6 +175,7 @@ function focusPolygonAndLockView(entity) {
 
     const boundingSphere = Cesium.BoundingSphere.fromPoints(positions);
     currentOrbitTarget = boundingSphere.center;
+    orbitRange = defaultOrbitRange;
 
     isOrbitMode = false;
     controller.enableInputs = false;
@@ -527,11 +532,14 @@ function setActivePolygonMenuButton(entityName) {
 }
 
 function renderSingleLotInfo(entity) {
-    infoEyebrow.textContent = "Operazione immobiliare";
+    infoEyebrow.textContent = "";
     lotTitle.textContent = entity.name || "Lotto";
 
     const immagine = formatValue(getProp(entity, "immagine"));
     const investimentiPartnership = formatValue(getProp(entity, "investimentiPartnership"));
+    const surface = formatValue(getProp(entity, "surface"));
+    const apartments = formatValue(getProp(entity, "apartments"));
+    const trackRecord = formatValue(getProp(entity, "trackRecord"));
     const descrizione = formatValue(getProp(entity, "descrizione"));
 
     infoPanelBody.innerHTML = `
@@ -545,6 +553,21 @@ function renderSingleLotInfo(entity) {
             <div class="info-row">
                 <span>Investimenti & Partnership</span>
                 <strong>${investimentiPartnership}</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Surface</span>
+                <strong>${surface}</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Apartments</span>
+                <strong>${apartments}</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Track Record</span>
+                <strong>${trackRecord}</strong>
             </div>
 
             <div class="info-text-block">
@@ -665,12 +688,13 @@ function buildLotIconEntity(name, entities) {
     if (!basePosition) return null;
 
     const primaryEntity = entities[0];
+    const iconPath = getProp(primaryEntity, "icona") || "assets/icons/default-marker.png";
 
     const cartographic = Cesium.Cartographic.fromCartesian(basePosition);
     const iconPosition = Cesium.Cartesian3.fromRadians(
         cartographic.longitude,
         cartographic.latitude,
-        cartographic.height + 26
+        cartographic.height + 15
     );
 
     const iconEntity = viewer.entities.add({
@@ -682,14 +706,13 @@ function buildLotIconEntity(name, entities) {
             linkedEntityId: primaryEntity.id
         },
         billboard: {
-            image: "assets/icons/cantiere-marker.png",
-            width: 70,
-            height: 70,
+            image: iconPath,
+            scale: 0.15,
             horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
             pixelOffset: new Cesium.Cartesian2(0, 0),
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            scaleByDistance: new Cesium.NearFarScalar(180.0, 1.0, 2200.0, 0.82)
+            scaleByDistance: new Cesium.NearFarScalar(180.0, 1.3, 2200.0, 0.60)
         }
     });
 
@@ -878,7 +901,7 @@ viewer.entities.add({
             7.680980767577986, 45.06673813242232, 315
         ]),
         material: new Cesium.ColorMaterialProperty(
-            Cesium.Color.RED.withAlpha(0.2)
+            Cesium.Color.BLUE.withAlpha(0.2)
         ),
         perPositionHeight: true,
         extrudedHeight: 285,
@@ -886,8 +909,21 @@ viewer.entities.add({
     },
     properties: {
         immagine: "assets/img/pacioli.jpeg",
-        investimentiPartnership: "Investimenti & Partnership",
-        descrizione: "Descrizione del progetto Palazzo Pacioli."
+        investimentiPartnership: "Sponsor, private entity",
+        surface: " 16,500 m²",
+        apartments: " 95",
+        trackRecord: " 25.000.000 €",
+        icona: "assets/icons/pacioli.png",
+        descrizione: `Previously the historical headoffice of INPS (National Health Service), Palazzo
+                        Pacioli will be reborn as a luxury residential building in the heart of Turin. The
+                        building features a total surface of 16,500 square meters and will host 92
+                        apartments as well as 146 garages and cellars. The ground floor will house
+                        luxury shops, high profile activities and services. The building rehabilitation
+                        will also entail an urban regeneration intervention - the last stretch of via G.
+                        Amendola will be pedestrianized while providing the main entrance to the large
+                        monumental hall of the palace. The intervention, which will include various
+                        condominium amenities, is bound to be one of the most significant heritage
+                        architectural recovery works in the historical centre of Turin.`
     }
 });
 
@@ -902,7 +938,7 @@ viewer.entities.add({
             7.681569142587408, 45.06857365903585, 315
         ]),
         material: new Cesium.ColorMaterialProperty(
-            Cesium.Color.RED.withAlpha(0.2)
+            Cesium.Color.BLUE.withAlpha(0.2)
         ),
         perPositionHeight: true,
         extrudedHeight: 285,
@@ -910,8 +946,17 @@ viewer.entities.add({
     },
     properties: {
         immagine: "assets/img/velo.jpg",
-        investimentiPartnership: "Investimenti & Partnership",
-        descrizione: "Descrizione del progetto Casa Vélo."
+        investimentiPartnership: "Prop trading, Local co-investor",
+        surface: " 10,000 m²",
+        apartments: " 94",
+        trackRecord: " 35.000.000 €",
+        icona: "assets/icons/velo.png",
+        descrizione: `Harmonious fusion between an eighteenth-century palace
+                        and an contemporary building, in the heart of Turin.
+                        10,000 m² distributed in 85 customizable apartments
+                        with beautiful interior views, 27 garages, a pleasant and
+                        relaxing green space and a prestigious inner pyramidal
+                        glass-domed courtyard.`
     }
 });
 
@@ -920,22 +965,26 @@ viewer.entities.add({
     name: "Angoli",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.677751532298875, 45.068316182918814, 315,
-            7.6783465742329575, 45.068115905344634, 315,
-            7.678580187544821, 45.06842887263733, 315,
-            7.67797094993596, 45.06864785502038, 315
+            7.677751532298875, 45.068316182918814, 300,
+            7.6783465742329575, 45.068115905344634, 300,
+            7.678580187544821, 45.06842887263733, 300,
+            7.67797094993596, 45.06864785502038, 300
         ]),
         material: new Cesium.ColorMaterialProperty(
-            Cesium.Color.RED.withAlpha(0.2)
+            Cesium.Color.BLUE.withAlpha(0.2)
         ),
         perPositionHeight: true,
         extrudedHeight: 285,
         outline: false
     },
     properties: {
-        immagine: "assets/img/alfieri.jpg",
-        investimentiPartnership: "Investimenti & Partnership",
-        descrizione: "Descrizione del progetto Casa Vélo."
+        immagine: "assets/img/alfieri.png",
+        investimentiPartnership: "-",
+        surface: " - m²",
+        apartments: " -",
+        trackRecord: " - €",
+        icona: "assets/icons/angoli.png",
+         descrizione: `-.`
     }
 });
 
@@ -951,7 +1000,7 @@ viewer.entities.add({
 
         ]),
         material: new Cesium.ColorMaterialProperty(
-            Cesium.Color.RED.withAlpha(0.2)
+            Cesium.Color.BLUE.withAlpha(0.2)
         ),
         perPositionHeight: true,
         extrudedHeight: 280,
@@ -959,10 +1008,190 @@ viewer.entities.add({
     },
     properties: {
         immagine: "assets/img/molassi.jpg",
-        investimentiPartnership: "Investimenti & Partnership",
-        descrizione: "Descrizione del progetto Casa Vélo."
+        investimentiPartnership: "-",
+        surface: " - m²",
+        apartments: " -",
+        trackRecord: " - €",
+        icona: "assets/icons/molassi.png",
+        descrizione: `-.`
     }
 });
+
+viewer.entities.add({
+    id: "Contemporaneo",
+    name: "Palazzo Contemporaneo",
+    polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+                7.66993201562417, 45.06291125676272, 320,
+                7.669576858989491, 45.06228205194891, 320,
+                7.669941770397155, 45.06214593962472, 320,
+                7.670047996531381, 45.06229323162203, 320,
+                7.670244263912098, 45.06235440165116, 320,
+                7.67043470573154, 45.062291220558706, 320,
+                7.670652820451309, 45.062616873449926, 320
+
+        ]),
+        material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.BLUE.withAlpha(0.2)
+        ),
+        perPositionHeight: true,
+        extrudedHeight: 280,
+        outline: false
+    },
+    properties: {
+        immagine: "assets/img/contemporaneo.jpg",
+        investimentiPartnership: "Prop trading",
+        surface: " 10,000 m²",
+        apartments: " 95",
+        trackRecord: " 27.980.000 €",
+        icona: "assets/icons/contemporaneo.png",
+        descrizione: `Palazzo Contemporaneo will be a new building of approximately
+                        10,000 square meters with 10 floors above ground, in the historical
+                        residential neighbourhood of Crocetta. The building will be completely
+                        demolished and rebuilt experimenting and applying new construction
+                        techniques to create a unique product, both from a commercial and
+                        executive standpoint. The high standards of sustainability coupled with
+                        the historical character of the area, will transform it into an icon of the
+                        Turin skyline.`
+    }
+})
+
+viewer.entities.add({
+    id: "Dune",
+    name: "Palazzo Dune",
+    polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+            7.681566823732004, 45.064357336499874, 305,
+            7.681844786947655, 45.064700664973465, 305,
+            7.682176507499465, 45.064548636167046, 305,
+            7.681927460378208, 45.06424311692661, 305
+
+        ]),
+        material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.BLUE.withAlpha(0.2)
+        ),
+        perPositionHeight: true,
+        extrudedHeight: 280,
+        outline: false
+    },
+    properties: {
+        immagine: "assets/img/dune.jpg",
+        investimentiPartnership: "Prop trading, Local Co-Investor",
+        surface: " - m²",
+        apartments: " 25",
+        trackRecord: " 6.550.000 €",
+        icona: "assets/icons/dune.png",
+        descrizione: `At number 35 of the prestigious Via Lagrange, a new residential
+                        iconic as well as eco-friendly building will see the light. The restyling
+                        of the main façade stands out for its courtly linearity in which
+                        aesthetics and functionality coexist in perfect harmony. Its design is
+                        meant to satisfy the highest contemporary housing needs. Led by
+                        the growing awareness about the need to design and build with
+                        a low environmental impact, we are constantly searching for new
+                        materials, systems and finishes in harmony with the physical and
+                        cultural environment.`
+    }
+});
+
+viewer.entities.add({
+    id: "Doria",
+    name: "Casa Doria",
+    polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+            7.682120690405117, 45.06418590910793, 305,
+            7.682513688725606, 45.064101626154304, 305,
+            7.682636477430582, 45.06434861024248, 305,
+            7.682230084366958, 45.06442541401784, 305
+
+        ]),
+        material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.BLUE.withAlpha(0.2)
+        ),
+        perPositionHeight: true,
+        extrudedHeight: 280,
+        outline: false
+    },
+    properties: {
+        immagine: "assets/img/doria.png",
+        investimentiPartnership: "Prop trading, Local Co-Investor",
+        surface: " - m²",
+        apartments: " 19",
+        trackRecord: " 5.300.000 €",
+        icona: "assets/icons/doria.png",
+        descrizione: `At Via Andrea Doria 7, on the corner of Via Lagrange, in the heart
+                        of Turin, the new fine Casadoria residential complex will couple Turin
+                        heritage style with contemporary architecture. This prestigious building
+                        will feature 15 apartments, 5 garages and 8 parking spaces.`
+    }
+});
+
+viewer.entities.add({
+    id: "Ellen",
+    name: "Palazzo Ellen",
+    polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+            7.681864849664294, 45.06569389928816, 315,
+            7.682441346225534, 45.06549735990407, 315,
+            7.682153844891726, 45.06513505384391, 315,
+            7.6816062590801195, 45.06533413668166, 315
+
+        ]),
+        material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.BLUE.withAlpha(0.2)
+        ),
+        perPositionHeight: true,
+        extrudedHeight: 280,
+        outline: false
+    },
+    properties: {
+        immagine: "assets/img/ellen.png",
+        investimentiPartnership: "Prop trading, Local Co-Investor",
+        surface: " 4000 m²",
+        apartments: " 26",
+        trackRecord: " 23.100.000 €",
+        icona: "assets/icons/ellen.png",
+        descrizione: `The new prestigious real estate operation of 4000
+                        m² and 26 apartments, transforms and innovates the
+                        rationalist rigour of the building at Via Lagrange 24 into
+                        contemporary design, while maintaining the characteristics of
+                        sumptuousness and elegance, typical of the rationalist architectural
+                        style of the 1930s.`
+    }
+});
+
+viewer.entities.add({
+    id: "Accademia",
+    name: "Accademia 38",
+    polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+            7.685342475223557, 45.06120802769718, 305,
+            7.685599438712176, 45.06157242005522, 305,
+            7.685072485451941, 45.061745047287616, 305,
+            7.684830559508038, 45.061393199758385, 305
+
+        ]),
+        material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.BLUE.withAlpha(0.2)
+        ),
+        perPositionHeight: true,
+        extrudedHeight: 280,
+        outline: false
+    },
+    properties: {
+        immagine: "assets/img/accademia.jpg",
+        investimentiPartnership: "Prop trading",
+        surface: " 4500 m²",
+        apartments: " 50",
+        trackRecord: " 14.500.000 €",
+        icona: "assets/icons/accademia.png",
+        descrizione: `Accademia 38 is not just a prestigious building, but a view of the Turin
+                        of the late nineteenth century, revisited to adapt the contemporary
+                        lifestyle.
+                        The 4500 m² project, 50 real estate units and 4 car garages, is a
+                        conservative renovation of a residential building in the center of Turin.`
+    }
+});
+
 
 addLabelsToAllLotti();
 window.addEventListener("resize", applyLotLabelResponsiveStyles);
