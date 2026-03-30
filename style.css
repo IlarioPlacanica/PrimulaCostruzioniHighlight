@@ -10,6 +10,8 @@
     --accent: #99B5BB;
     --header-h: 78px;
     --transition: 0.28s ease;
+    --panel-scroll-w: 8px;
+    --panel-scroll-offset: 25px;
 }
 
 * {
@@ -151,7 +153,6 @@ h1 {
     margin: 0 0 18px;
     max-width: 8ch;
     line-height: 1;
-
 }
 
     .intro-title span {
@@ -261,7 +262,6 @@ h1 {
     display: none !important;
 }
 
-
 /* ===== OPERATIONS MENU ===== */
 
 .operations-menu {
@@ -320,6 +320,11 @@ h1 {
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    flex: 1 1 auto;
+    margin-right: var(--panel-scroll-offset);
+    padding-right: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
 }
 
     .operations-menu-panel.hidden {
@@ -334,19 +339,10 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+    max-height: none;
+    overflow: visible;
     min-height: 0;
 }
-
-    .polygon-buttons-list::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .polygon-buttons-list::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.14);
-    }
 
 .polygon-list-button {
     width: 100%;
@@ -425,7 +421,33 @@ h1 {
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    flex: 1 1 auto;
+    margin-right: var(--panel-scroll-offset);
+    padding-right: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
 }
+
+    #infoPanelBody::-webkit-scrollbar,
+    .operations-menu-panel::-webkit-scrollbar {
+        width: var(--panel-scroll-w);
+    }
+
+    #infoPanelBody::-webkit-scrollbar-track,
+    .operations-menu-panel::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    #infoPanelBody::-webkit-scrollbar-thumb,
+    .operations-menu-panel::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+    }
+
+        #infoPanelBody::-webkit-scrollbar-thumb:hover,
+        .operations-menu-panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
 
 #closePanel {
     position: absolute;
@@ -628,10 +650,8 @@ h1 {
     bottom: 24px;
     transform: translateX(-50%);
     z-index: 50;
-
     min-height: 48px;
     padding: 0 20px;
-
     background: rgba(8, 10, 13, 0.88);
     color: #f5f3ef;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -652,7 +672,6 @@ h1 {
 /* ===== RESPONSIVE ===== */
 
 @media (max-width: 1180px) {
-
     .operations-menu {
         width: 320px;
     }
@@ -780,24 +799,25 @@ h1 {
         z-index: 60;
     }
 }
+
 html {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
 }
 
-html::-webkit-scrollbar {
-    width: 8px;
-}
+    html::-webkit-scrollbar {
+        width: 8px;
+    }
 
-html::-webkit-scrollbar-track {
-    background: transparent;
-}
+    html::-webkit-scrollbar-track {
+        background: transparent;
+    }
 
-html::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.16);
-    border-radius: 999px;
-}
+    html::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+    }
 
-html::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.28);
-}
+        html::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
