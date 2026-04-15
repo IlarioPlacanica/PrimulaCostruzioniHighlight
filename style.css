@@ -98,7 +98,7 @@ video {
     background: #000;
 }
 
-.intro-video,
+.intro-image,
 .intro-overlay {
     position: absolute;
     inset: 0;
@@ -106,8 +106,11 @@ video {
     height: 100%;
 }
 
-.intro-video {
-    object-fit: cover;
+.intro-image {
+    background-image: url("assets/media/index/intro.png");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 
 .intro-overlay {
@@ -182,8 +185,8 @@ h1 {
     justify-content: center;
     min-height: 65px;
     padding: 0 22px;
-    background: linear-gradient(135deg, #99B5BB 0%, #B7CDD1 100%);
-    color: #111;
+    background: #ffffff;
+    color: #6fd3ff;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -375,66 +378,85 @@ h1 {
     }
 /* ===== PARTNERSHIP FILTERS ===== */
 
-.partnership-filters-panel {
+.partnership-filters-bar {
     position: absolute;
-    top: calc(var(--header-h) + 24px);
-    left: 428px;
-    width: 380px;
-    z-index: 40;
+    left: 120px;
+    right: 120px;
+    bottom: 28px;
+    z-index: 45;
     background: var(--panel);
     border: 1px solid var(--line);
-    max-height: calc(100svh - var(--header-h) - 96px);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-}
-
-.partnership-filters-head {
-    min-height: 64px;
-    padding: 0 18px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid var(--line);
-    background: transparent;
+    gap: 18px;
+    padding: 12px 16px;
+    min-height: 74px;
 }
 
-.partnership-filters-list {
-    padding: 14px;
+.partnership-filters-bar {
+    position: absolute;
+    left: 120px;
+    right: 120px;
+    bottom: 28px;
+    z-index: 45;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    min-height: 0;
-    margin-right: var(--panel-scroll-offset);
-    padding-right: 12px;
+    align-items: center;
+    gap: 18px;
+    padding: 12px 16px;
+    min-height: 74px;
+}
+
+.partnership-filters-bar-title {
+    flex: 0 0 auto;
+    min-width: 260px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.partnership-filters-bar-list {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
 }
 
-    .partnership-filters-list::-webkit-scrollbar {
-        width: var(--panel-scroll-w);
+    .partnership-filters-bar-list::-webkit-scrollbar {
+        height: 8px;
     }
 
-    .partnership-filters-list::-webkit-scrollbar-track {
+    .partnership-filters-bar-list::-webkit-scrollbar-track {
         background: transparent;
     }
 
-    .partnership-filters-list::-webkit-scrollbar-thumb {
+    .partnership-filters-bar-list::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.16);
         border-radius: 999px;
     }
 
-        .partnership-filters-list::-webkit-scrollbar-thumb:hover {
+        .partnership-filters-bar-list::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.28);
         }
 
 .partnership-filter-button {
-    width: 100%;
+    flex: 0 0 auto;
     min-height: 46px;
-    padding: 0 14px;
+    padding: 0 16px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid transparent;
     color: var(--text-soft);
@@ -443,6 +465,7 @@ h1 {
     font-size: 0.94rem;
     font-weight: 600;
     transition: background var(--transition), color var(--transition), border-color var(--transition);
+    white-space: nowrap;
 }
 
     .partnership-filter-button:hover {
@@ -455,11 +478,9 @@ h1 {
         background: rgba(153, 181, 187, 0.22);
         color: #fff;
         border-color: rgba(153, 181, 187, 0.5);
-    }
+        /* ===== INFO PANEL ===== */
 
-/* ===== INFO PANEL ===== */
-
-.info-panel {
+        .info-panel {
     position: absolute;
     top: calc(var(--header-h) + 24px);
     right: 24px;

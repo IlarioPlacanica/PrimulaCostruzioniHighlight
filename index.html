@@ -10,7 +10,7 @@
     <link href="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Widgets/widgets.css"
           rel="stylesheet" />
 
-    <link rel="stylesheet" href="style.css?v=20260415-filter-panel" />
+    <link rel="stylesheet" href="style.css?v=20260415-bottom-horizontal-filter" />
 </head>
 <body>
     <header class="site-header">
@@ -26,14 +26,7 @@
 
     <main>
         <section class="intro-section" id="intro">
-            <video class="intro-video"
-                   autoplay
-                   muted
-                   loop
-                   playsinline
-                   preload="auto">
-                <source src="assets/video/intro.mp4" type="video/mp4" />
-            </video>
+            <div class="intro-image" aria-hidden="true"></div>
 
             <div class="intro-overlay"></div>
 
@@ -78,12 +71,9 @@
                 </div>
             </aside>
 
-            <aside id="partnershipFiltersPanel" class="partnership-filters-panel">
-                <div class="partnership-filters-head">
-                    <div class="operations-menu-title">FILTRA PER INVESTIMENTI & PARTNERSHIP</div>
-                </div>
-
-                <div id="partnershipFiltersList" class="partnership-filters-list">
+            <aside id="partnershipFiltersBar" class="partnership-filters-bar">
+                <div class="partnership-filters-bar-title">FILTRA PER INVESTIMENTI & PARTNERSHIP</div>
+                <div id="partnershipFiltersList" class="partnership-filters-bar-list">
                     <!-- Bottoni creati da main.js -->
                 </div>
             </aside>
@@ -108,6 +98,6 @@
         </section>
     </main>
 
-    <script type="module" src="main.js?v=20260415-filter-panel"></script>
+    <script type="module" src="main.js?v=20260415-bottom-horizontal-filter"></script>
 </body>
 </html>
