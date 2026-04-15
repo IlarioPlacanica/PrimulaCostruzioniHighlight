@@ -108,7 +108,7 @@ video {
 }
 
 .intro-image {
-    background-image: url("assets/media/index/intro.png");
+    background-image: url("assets/img/intro.png");
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
