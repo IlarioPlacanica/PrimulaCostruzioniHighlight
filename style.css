@@ -185,7 +185,7 @@ h1 {
     justify-content: center;
     min-height: 65px;
     padding: 0 22px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.78);
     color: #8bbcff;
     font-weight: 800;
     text-transform: uppercase;

@@ -143,6 +143,7 @@ function enterFreeCameraMode() {
 
     closeInfoPanel();
     setSelectedLotOverlay(null);
+    restoreSelectedPolygonVisibility();
 
     viewer.camera.flyTo({
         destination: initialCameraView.destination,
@@ -615,7 +616,10 @@ function renderSingleLotInfo(entity) {
 function handlePolygonSelection(entity, options = {}) {
     if (!entity || entity.show === false) return;
 
+    restoreSelectedPolygonVisibility();
     blinkPolygon(entity);
+    hideSelectedPolygon(entity);
+
     renderSingleLotInfo(entity);
     focusPolygonAndLockView(entity);
     setSelectedLotOverlay(entity);
@@ -696,6 +700,7 @@ function applyPartnershipFilter() {
     });
 
     if (!selectedEntityStillVisible) {
+        restoreSelectedPolygonVisibility();
         setSelectedLotOverlay(null);
         closeInfoPanel();
         setActivePolygonMenuButton("");
@@ -775,6 +780,51 @@ function blinkPolygon(entity) {
     }, 420);
 }
 
+function setPolygonOpacity(entity, alpha) {
+    if (!entity?.polygon) return;
+
+    const polygon = entity.polygon;
+    const now = Cesium.JulianDate.now();
+
+    let baseColor = Cesium.Color.BLUE.withAlpha(0.2);
+
+    if (polygon.material instanceof Cesium.ColorMaterialProperty) {
+        const currentColor = polygon.material.color?.getValue(now);
+        if (currentColor) {
+            baseColor = Cesium.Color.clone(currentColor);
+        }
+    } else if (polygon.material && polygon.material.red !== undefined) {
+        baseColor = Cesium.Color.clone(polygon.material);
+    }
+
+    polygon.material = new Cesium.ColorMaterialProperty(
+        new Cesium.Color(
+            baseColor.red,
+            baseColor.green,
+            baseColor.blue,
+            alpha
+        )
+    );
+}
+
+function restoreSelectedPolygonVisibility() {
+    if (!activeSelectedPolygonEntity) return;
+
+    setPolygonOpacity(activeSelectedPolygonEntity, 0.2);
+    activeSelectedPolygonEntity = null;
+}
+
+function hideSelectedPolygon(entity) {
+    if (!entity?.polygon) return;
+
+    if (activeSelectedPolygonEntity && activeSelectedPolygonEntity !== entity) {
+        setPolygonOpacity(activeSelectedPolygonEntity, 0.2);
+    }
+
+    activeSelectedPolygonEntity = entity;
+    setPolygonOpacity(entity, 0.0);
+}
+
 // =========================
 // MARKER LOTTI / OVERLAY SELEZIONE
 // =========================
@@ -782,6 +832,7 @@ function blinkPolygon(entity) {
 const lotMarkerEntities = [];
 const lotSelectedOverlayEntities = [];
 let activeSelectedLotName = "";
+let activeSelectedPolygonEntity = null;
 
 function getEntityHierarchy(entity) {
     const hierarchyProperty = entity?.polygon?.hierarchy;
