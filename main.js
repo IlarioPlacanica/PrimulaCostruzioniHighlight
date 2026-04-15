@@ -497,6 +497,9 @@ function getAllPartnershipValues() {
 
     getAllLotti().forEach((entity) => {
         const value = normalizePartnershipValue(getProp(entity, "investimentiPartnership"));
+
+        if (value === "-") return;
+
         uniqueValues.add(value);
     });
 
@@ -931,11 +934,11 @@ function buildLotMarkerEntities(name, entities) {
         },
         billboard: {
             image: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(diamondSvg)}`,
-            scale: 0.58,
+            scale: 0.75,
             verticalOrigin: Cesium.VerticalOrigin.CENTER,
             horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            scaleByDistance: new Cesium.NearFarScalar(180.0, 1.0, 2200.0, 0.62)
+            scaleByDistance: new Cesium.NearFarScalar(180.0, 1.0, 2200.0, 0.95)
         }
     });
 

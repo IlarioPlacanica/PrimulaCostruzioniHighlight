@@ -107,7 +107,7 @@ video {
 }
 
 .intro-image {
-    background-image: url("assets/media/index/intro.png");
+    background-image: url("assets/img/intro.png");
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -479,8 +479,9 @@ h1 {
         color: #fff;
         border-color: rgba(153, 181, 187, 0.5);
         /* ===== INFO PANEL ===== */
+    }
 
-        .info-panel {
+   .info-panel {
     position: absolute;
     top: calc(var(--header-h) + 24px);
     right: 24px;
