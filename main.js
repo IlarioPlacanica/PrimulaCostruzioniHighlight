@@ -900,18 +900,11 @@ function buildSelectedLotOverlayEntity(name, entities) {
     const primaryEntity = entities[0];
     const iconPath = getProp(primaryEntity, "icona") || "assets/icons/default-marker.png";
     const metrics = getLotTopMetrics(entities);
-    const appearance = getSelectedOverlayLabelAppearance();
 
     const iconPosition = Cesium.Cartesian3.fromRadians(
         metrics.longitude,
         metrics.latitude,
         metrics.topHeight + 18
-    );
-
-    const labelPosition = Cesium.Cartesian3.fromRadians(
-        metrics.longitude,
-        metrics.latitude,
-        metrics.topHeight + 42
     );
 
     const iconEntity = viewer.entities.add({
@@ -934,39 +927,10 @@ function buildSelectedLotOverlayEntity(name, entities) {
         }
     });
 
-    const labelEntity = viewer.entities.add({
-        id: `selectedLabel_${primaryEntity.id}`,
-        name: `${name}_selected_label`,
-        position: labelPosition,
-        show: false,
-        properties: {
-            isLotSelectedOverlay: true,
-            linkedEntityId: primaryEntity.id
-        },
-        label: {
-            text: name,
-            font: appearance.font,
-            fillColor: Cesium.Color.fromCssColorString("#F6F3EE"),
-            outlineColor: Cesium.Color.fromCssColorString("rgba(0, 0, 0, 0.55)"),
-            outlineWidth: appearance.outlineWidth,
-            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-            showBackground: false,
-            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            pixelOffset: new Cesium.Cartesian2(0, -54),
-            heightReference: Cesium.HeightReference.NONE,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0.0, 2200.0),
-            scaleByDistance: appearance.scaleByDistance
-        }
-    });
-
     iconEntity._linkedEntities = entities;
     iconEntity._lotName = name;
-    labelEntity._linkedEntities = entities;
-    labelEntity._lotName = name;
 
-    return { iconEntity, labelEntity };
+    return { iconEntity };
 }
 
 function applySelectedOverlayResponsiveStyles() {
