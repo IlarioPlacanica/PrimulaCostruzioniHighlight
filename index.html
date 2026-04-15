@@ -10,7 +10,7 @@
     <link href="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Widgets/widgets.css"
           rel="stylesheet" />
 
-    <link rel="stylesheet" href="style.css?v=20260415-intro-image-filter" />
+    <link rel="stylesheet" href="style.css?v=20260415-filter-panel" />
 </head>
 <body>
     <header class="site-header">
@@ -22,15 +22,18 @@
             <a href="#intro">Intro</a>
             <a href="#viewer">Viewer</a>
         </nav>
-
-        <div id="headerLotFilters" class="header-lot-filters hidden">
-            <!-- creati da main.js -->
-        </div>
     </header>
 
     <main>
         <section class="intro-section" id="intro">
-            <div class="intro-image" aria-hidden="true"></div>
+            <video class="intro-video"
+                   autoplay
+                   muted
+                   loop
+                   playsinline
+                   preload="auto">
+                <source src="assets/video/intro.mp4" type="video/mp4" />
+            </video>
 
             <div class="intro-overlay"></div>
 
@@ -75,6 +78,16 @@
                 </div>
             </aside>
 
+            <aside id="partnershipFiltersPanel" class="partnership-filters-panel">
+                <div class="partnership-filters-head">
+                    <div class="operations-menu-title">FILTRA PER INVESTIMENTI & PARTNERSHIP</div>
+                </div>
+
+                <div id="partnershipFiltersList" class="partnership-filters-list">
+                    <!-- Bottoni creati da main.js -->
+                </div>
+            </aside>
+
             <button id="homeViewButton"
                     class="camera-home-button hidden"
                     type="button"
@@ -95,6 +108,6 @@
         </section>
     </main>
 
-    <script type="module" src="main.js?v=20260415-intro-image-filter"></script>
+    <script type="module" src="main.js?v=20260415-filter-panel"></script>
 </body>
 </html>

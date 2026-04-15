@@ -54,7 +54,7 @@ const controller = viewer.scene.screenSpaceCameraController;
 const canvas = viewer.scene.canvas;
 const homeViewButton = document.getElementById("homeViewButton");
 const enterViewerButton = document.getElementById("enterViewerButton");
-const headerLotFilters = document.getElementById("headerLotFilters");
+const partnershipFiltersList = document.getElementById("partnershipFiltersList");
 
 canvas.style.touchAction = "none";
 
@@ -389,22 +389,10 @@ canvas.addEventListener("wheel", (event) => {
     updateOrbitCamera();
 }, { passive: false });
 
-function syncHeaderFilterVisibility() {
-    if (!headerLotFilters) return;
-
-    if (isViewerUnlocked) {
-        document.body.classList.add("viewer-active");
-        headerLotFilters.classList.remove("hidden");
-    } else {
-        document.body.classList.remove("viewer-active");
-        headerLotFilters.classList.add("hidden");
-    }
-}
 
 if (enterViewerButton) {
     enterViewerButton.addEventListener("click", () => {
         isViewerUnlocked = true;
-        syncHeaderFilterVisibility();
         setTimeout(syncViewerControls, 500);
     });
 }
@@ -676,10 +664,10 @@ function bindOperationsMenuEvents() {
     });
 }
 
-function setActiveHeaderFilterButton() {
-    if (!headerLotFilters) return;
+function setActivePartnershipFilterButton() {
+    if (!partnershipFiltersList) return;
 
-    const buttons = headerLotFilters.querySelectorAll(".header-filter-button");
+    const buttons = partnershipFiltersList.querySelectorAll(".partnership-filter-button");
     buttons.forEach((button) => {
         const isActive = button.dataset.filterValue === activePartnershipFilter;
         button.classList.toggle("is-active", isActive);
@@ -713,22 +701,22 @@ function applyPartnershipFilter() {
 
 function setPartnershipFilter(value) {
     activePartnershipFilter = value;
-    setActiveHeaderFilterButton();
+    setActivePartnershipFilterButton();
     applyPartnershipFilter();
 }
 
-function buildHeaderLotFilters() {
-    if (!headerLotFilters) return;
+function buildPartnershipFiltersPanel() {
+    if (!partnershipFiltersList) return;
 
     const values = getAllPartnershipValues();
     const filters = ["ALL", ...values];
 
-    headerLotFilters.innerHTML = "";
+    partnershipFiltersList.innerHTML = "";
 
     filters.forEach((value) => {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "header-filter-button";
+        button.className = "partnership-filter-button";
         button.dataset.filterValue = value;
         button.textContent = value === "ALL" ? "Tutti" : value;
 
@@ -736,10 +724,10 @@ function buildHeaderLotFilters() {
             setPartnershipFilter(value);
         });
 
-        headerLotFilters.appendChild(button);
+        partnershipFiltersList.appendChild(button);
     });
 
-    setActiveHeaderFilterButton();
+    setActivePartnershipFilterButton();
 }
 
 window.closeInfoPanel = closeInfoPanel;
@@ -1495,8 +1483,7 @@ window.addEventListener("resize", applySelectedOverlayResponsiveStyles);
 buildPolygonButtonsMenu();
 bindOperationsMenuEvents();
 setOperationsMenuOpen(false);
-buildHeaderLotFilters();
-syncHeaderFilterVisibility();
+buildPartnershipFiltersPanel();
 
 viewer.entities.values.forEach((entity) => {
     if (entity.polygon) {
