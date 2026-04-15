@@ -743,7 +743,7 @@ window.closeInfoPanel = closeInfoPanel;
 // =========================
 // BLINK POLIGONO
 // =========================
-
+/*
 function blinkPolygon(entity) {
     if (!entity || !entity.polygon) return;
     if (entity._isBlinking) return;
@@ -824,7 +824,7 @@ function hideSelectedPolygon(entity) {
     activeSelectedPolygonEntity = entity;
     setPolygonOpacity(entity, 0.0);
 }
-
+*/
 // =========================
 // MARKER LOTTI / OVERLAY SELEZIONE
 // =========================

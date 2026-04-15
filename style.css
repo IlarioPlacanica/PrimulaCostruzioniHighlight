@@ -185,8 +185,8 @@ h1 {
     justify-content: center;
     min-height: 65px;
     padding: 0 22px;
-    background: rgba(255, 255, 255, 0.78);
-    color: #8bbcff;
+    background: rgba(255, 255, 255, 0.60);
+    color: #044fb5;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -755,18 +755,21 @@ h1 {
 
 .camera-home-button {
     position: absolute;
-    left: 50%;
-    bottom: 24px;
-    transform: translateX(-50%);
+    top: calc(var(--header-h) + 24px);
+    right: 24px;
     z-index: 50;
-    min-height: 48px;
+    min-height: 64px;
     padding: 0 20px;
-    background: rgba(8, 10, 13, 0.88);
-    color: #f5f3ef;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--line);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
 }
 
     .camera-home-button:hover {
@@ -824,8 +827,9 @@ h1 {
     }
 
     .camera-home-button {
+        top: calc(var(--header-h) + 16px);
         right: 14px;
-        bottom: 90px;
+        min-height: 54px;
     }
 }
 
@@ -871,16 +875,17 @@ h1 {
             font-size: 1.15rem;
         }
 
-    .camera-home-button {
-        left: 8px;
-        right: auto;
-        bottom: 196px;
-        min-height: 42px;
-        padding: 0 14px;
-        font-size: 0.75rem;
-        z-index: 60;
+    @media (max-width: 680px) {
+        .camera-home-button {
+            top: auto;
+            right: 8px;
+            bottom: 180px;
+            min-height: 42px;
+            padding: 0 14px;
+            font-size: 0.75rem;
+            z-index: 60;
+        }
     }
-}
 
 html {
     scrollbar-width: thin;
