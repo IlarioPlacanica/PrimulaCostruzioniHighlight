@@ -10,7 +10,7 @@
     <link href="https://cesium.com/downloads/cesiumjs/releases/1.133/Build/Cesium/Widgets/widgets.css"
           rel="stylesheet" />
 
-    <link rel="stylesheet" href="style.css?v=20260327-intro-layout" />
+    <link rel="stylesheet" href="style.css?v=20260415-intro-image-filter" />
 </head>
 <body>
     <header class="site-header">
@@ -22,18 +22,15 @@
             <a href="#intro">Intro</a>
             <a href="#viewer">Viewer</a>
         </nav>
+
+        <div id="headerLotFilters" class="header-lot-filters hidden">
+            <!-- creati da main.js -->
+        </div>
     </header>
 
     <main>
         <section class="intro-section" id="intro">
-            <video class="intro-video"
-                   autoplay
-                   muted
-                   loop
-                   playsinline
-                   preload="auto">
-                <source src="assets/video/intro.mp4" type="video/mp4" />
-            </video>
+            <div class="intro-image" aria-hidden="true"></div>
 
             <div class="intro-overlay"></div>
 
@@ -98,6 +95,6 @@
         </section>
     </main>
 
-    <script type="module" src="main.js?v=20260327-intro-layout"></script>
+    <script type="module" src="main.js?v=20260415-intro-image-filter"></script>
 </body>
 </html>

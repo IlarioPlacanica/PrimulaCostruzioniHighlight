@@ -54,6 +54,7 @@ const controller = viewer.scene.screenSpaceCameraController;
 const canvas = viewer.scene.canvas;
 const homeViewButton = document.getElementById("homeViewButton");
 const enterViewerButton = document.getElementById("enterViewerButton");
+const headerLotFilters = document.getElementById("headerLotFilters");
 
 canvas.style.touchAction = "none";
 
@@ -388,9 +389,22 @@ canvas.addEventListener("wheel", (event) => {
     updateOrbitCamera();
 }, { passive: false });
 
+function syncHeaderFilterVisibility() {
+    if (!headerLotFilters) return;
+
+    if (isViewerUnlocked) {
+        document.body.classList.add("viewer-active");
+        headerLotFilters.classList.remove("hidden");
+    } else {
+        document.body.classList.remove("viewer-active");
+        headerLotFilters.classList.add("hidden");
+    }
+}
+
 if (enterViewerButton) {
     enterViewerButton.addEventListener("click", () => {
         isViewerUnlocked = true;
+        syncHeaderFilterVisibility();
         setTimeout(syncViewerControls, 500);
     });
 }
@@ -475,7 +489,9 @@ function openInfoPanel() {
     infoPanel.classList.remove("hidden");
 }
 
-closePanel.addEventListener("click", closeInfoPanel);
+if (closePanel) {
+    closePanel.addEventListener("click", closeInfoPanel);
+}
 
 function getAllLotti() {
     return viewer.entities.values.filter(entity =>
@@ -483,11 +499,35 @@ function getAllLotti() {
     );
 }
 
+function normalizePartnershipValue(value) {
+    const normalized = formatValue(value).trim();
+    return normalized || "-";
+}
+
+function getAllPartnershipValues() {
+    const uniqueValues = new Set();
+
+    getAllLotti().forEach((entity) => {
+        const value = normalizePartnershipValue(getProp(entity, "investimentiPartnership"));
+        uniqueValues.add(value);
+    });
+
+    return Array.from(uniqueValues).sort((a, b) => a.localeCompare(b, "it"));
+}
+
+let activePartnershipFilter = "ALL";
+
+function isEntityMatchingActiveFilter(entity) {
+    if (activePartnershipFilter === "ALL") return true;
+    const value = normalizePartnershipValue(getProp(entity, "investimentiPartnership"));
+    return value === activePartnershipFilter;
+}
+
 function getPolygonGroupsForMenu() {
     const groups = new Map();
 
     getAllLotti().forEach((entity) => {
-        if (!entity?.name || !entity.polygon) return;
+        if (!entity?.name || !entity.polygon || entity.show === false) return;
 
         if (entity.name === "Aree Comuni" && entity.id !== "lotto Aree_Comuni.1") {
             return;
@@ -582,7 +622,7 @@ function renderSingleLotInfo(entity) {
 }
 
 function handlePolygonSelection(entity, options = {}) {
-    if (!entity) return;
+    if (!entity || entity.show === false) return;
 
     blinkPolygon(entity);
     renderSingleLotInfo(entity);
@@ -634,6 +674,72 @@ function bindOperationsMenuEvents() {
             setOperationsMenuOpen(false);
         }
     });
+}
+
+function setActiveHeaderFilterButton() {
+    if (!headerLotFilters) return;
+
+    const buttons = headerLotFilters.querySelectorAll(".header-filter-button");
+    buttons.forEach((button) => {
+        const isActive = button.dataset.filterValue === activePartnershipFilter;
+        button.classList.toggle("is-active", isActive);
+    });
+}
+
+function setSelectedLotOverlay(entity) {
+    activeSelectedLotName = entity?.name || "";
+    refreshSelectedLotOverlayVisibility();
+}
+
+function applyPartnershipFilter() {
+    getAllLotti().forEach((entity) => {
+        entity.show = isEntityMatchingActiveFilter(entity);
+    });
+
+    refreshLotMarkersVisibility();
+    refreshSelectedLotOverlayVisibility();
+    buildPolygonButtonsMenu();
+
+    const selectedEntityStillVisible = getAllLotti().find((entity) => {
+        return entity.name === activeSelectedLotName && entity.show !== false;
+    });
+
+    if (!selectedEntityStillVisible) {
+        setSelectedLotOverlay(null);
+        closeInfoPanel();
+        setActivePolygonMenuButton("");
+    }
+}
+
+function setPartnershipFilter(value) {
+    activePartnershipFilter = value;
+    setActiveHeaderFilterButton();
+    applyPartnershipFilter();
+}
+
+function buildHeaderLotFilters() {
+    if (!headerLotFilters) return;
+
+    const values = getAllPartnershipValues();
+    const filters = ["ALL", ...values];
+
+    headerLotFilters.innerHTML = "";
+
+    filters.forEach((value) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "header-filter-button";
+        button.dataset.filterValue = value;
+        button.textContent = value === "ALL" ? "Tutti" : value;
+
+        button.addEventListener("click", () => {
+            setPartnershipFilter(value);
+        });
+
+        headerLotFilters.appendChild(button);
+    });
+
+    setActiveHeaderFilterButton();
 }
 
 window.closeInfoPanel = closeInfoPanel;
@@ -693,41 +799,6 @@ function getEntityHierarchy(entity) {
     return hierarchyProperty.getValue
         ? hierarchyProperty.getValue(Cesium.JulianDate.now())
         : hierarchyProperty;
-}
-
-function getCenterFromEntities(entities) {
-    const positions = entities.flatMap(entity => getEntityHierarchy(entity)?.positions || []);
-
-    if (!positions.length) return null;
-
-    let lonSum = 0;
-    let latSum = 0;
-    let maxHeight = 0;
-
-    positions.forEach((position) => {
-        const cartographic = Cesium.Cartographic.fromCartesian(position);
-        lonSum += cartographic.longitude;
-        latSum += cartographic.latitude;
-        maxHeight = Math.max(maxHeight, cartographic.height || 0);
-    });
-
-    const averageLon = lonSum / positions.length;
-    const averageLat = latSum / positions.length;
-
-    const extrudedHeights = entities.map(entity => {
-        const extrudedHeightProperty = entity.polygon?.extrudedHeight;
-        return extrudedHeightProperty?.getValue
-            ? extrudedHeightProperty.getValue(Cesium.JulianDate.now())
-            : extrudedHeightProperty;
-    });
-
-    const topHeight = Math.max(
-        maxHeight,
-        ...extrudedHeights.filter(value => typeof value === "number"),
-        0
-    );
-
-    return Cesium.Cartesian3.fromRadians(averageLon, averageLat, topHeight);
 }
 
 function getLotTopMetrics(entities) {
@@ -803,14 +874,6 @@ function getDiamondSvg(fillColor = "#6fd3ff") {
         </g>
       </svg>
     `;
-}
-
-function getSelectedOverlayLabelAppearance() {
-    return {
-        font: "900 24px Inter, system-ui, sans-serif",
-        outlineWidth: 2,
-        scaleByDistance: new Cesium.NearFarScalar(180.0, 1.15, 2200.0, 0.78)
-    };
 }
 
 function buildLotMarkerEntities(name, entities) {
@@ -932,17 +995,10 @@ function buildSelectedLotOverlayEntity(name, entities) {
 
     return { iconEntity };
 }
-/*
-function applySelectedOverlayResponsiveStyles() {
-    const appearance = getSelectedOverlayLabelAppearance();
 
-    lotSelectedOverlayEntities.forEach((overlay) => {
-        if (!overlay?.labelEntity?.label) return;
-        overlay.labelEntity.label.font = appearance.font;
-        overlay.labelEntity.label.outlineWidth = appearance.outlineWidth;
-        overlay.labelEntity.label.scaleByDistance = appearance.scaleByDistance;
-    });
-} */
+function applySelectedOverlayResponsiveStyles() {
+    // nessuna label da aggiornare
+}
 
 function addMarkersToAllLotti() {
     const groups = new Map();
@@ -970,11 +1026,6 @@ function addMarkersToAllLotti() {
     });
 
     refreshLotMarkersVisibility();
-    refreshSelectedLotOverlayVisibility();
-}
-
-function setSelectedLotOverlay(entity) {
-    activeSelectedLotName = entity?.name || "";
     refreshSelectedLotOverlayVisibility();
 }
 
@@ -1444,6 +1495,8 @@ window.addEventListener("resize", applySelectedOverlayResponsiveStyles);
 buildPolygonButtonsMenu();
 bindOperationsMenuEvents();
 setOperationsMenuOpen(false);
+buildHeaderLotFilters();
+syncHeaderFilterVisibility();
 
 viewer.entities.values.forEach((entity) => {
     if (entity.polygon) {
@@ -1451,6 +1504,7 @@ viewer.entities.values.forEach((entity) => {
     }
 });
 
+applyPartnershipFilter();
 refreshLotMarkersVisibility();
 refreshSelectedLotOverlayVisibility();
 
@@ -1463,29 +1517,28 @@ const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 handler.setInputAction((movement) => {
     const pickedObject = viewer.scene.pick(movement.position);
 
+    if (!Cesium.defined(pickedObject) || !Cesium.defined(pickedObject.id)) {
+        return;
+    }
+
+    let entity = pickedObject.id;
+
     if (
-        Cesium.defined(pickedObject) &&
-        Cesium.defined(pickedObject.id)
+        !entity.polygon &&
+        (
+            getProp(entity, "isLotMarker") ||
+            getProp(entity, "isLotSelectedOverlay")
+        )
     ) {
-        let entity = pickedObject.id;
-
-        if (
-            !entity.polygon &&
-            (
-                getProp(entity, "isLotMarker") ||
-                getProp(entity, "isLotSelectedOverlay")
-            )
-        ) {
-            const linkedEntityId = getProp(entity, "linkedEntityId");
-            const linkedEntity = viewer.entities.getById(linkedEntityId);
-            if (linkedEntity) {
-                entity = linkedEntity;
-            }
+        const linkedEntityId = getProp(entity, "linkedEntityId");
+        const linkedEntity = viewer.entities.getById(linkedEntityId);
+        if (linkedEntity) {
+            entity = linkedEntity;
         }
+    }
 
-        if (entity.polygon && Cesium.defined(entity.properties)) {
-            handlePolygonSelection(entity, { closeMenuAfterSelect: false });
-        }
+    if (entity.polygon && Cesium.defined(entity.properties) && entity.show !== false) {
+        handlePolygonSelection(entity, { closeMenuAfterSelect: false });
     }
 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
