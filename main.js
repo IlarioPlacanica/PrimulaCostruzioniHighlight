@@ -932,7 +932,7 @@ function buildSelectedLotOverlayEntity(name, entities) {
 
     return { iconEntity };
 }
-
+/*
 function applySelectedOverlayResponsiveStyles() {
     const appearance = getSelectedOverlayLabelAppearance();
 
@@ -942,7 +942,7 @@ function applySelectedOverlayResponsiveStyles() {
         overlay.labelEntity.label.outlineWidth = appearance.outlineWidth;
         overlay.labelEntity.label.scaleByDistance = appearance.scaleByDistance;
     });
-}
+} */
 
 function addMarkersToAllLotti() {
     const groups = new Map();
@@ -998,7 +998,6 @@ function refreshSelectedLotOverlayVisibility() {
             linkedEntities.some(entity => entity.show !== false);
 
         overlayGroup.iconEntity.show = shouldShow;
-        overlayGroup.labelEntity.show = shouldShow;
     });
 }
 
