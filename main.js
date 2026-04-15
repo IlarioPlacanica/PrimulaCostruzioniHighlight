@@ -934,11 +934,11 @@ function buildLotMarkerEntities(name, entities) {
         },
         billboard: {
             image: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(diamondSvg)}`,
-            scale: 0.75,
+            scale: 0.60,
             verticalOrigin: Cesium.VerticalOrigin.CENTER,
             horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            scaleByDistance: new Cesium.NearFarScalar(180.0, 1.0, 2200.0, 0.95)
+            scaleByDistance: new Cesium.NearFarScalar(180.0, 1.0, 2200.0, 0.75)
         }
     });
 
