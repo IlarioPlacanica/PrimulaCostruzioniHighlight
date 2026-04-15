@@ -390,7 +390,6 @@ canvas.addEventListener("wheel", (event) => {
     updateOrbitCamera();
 }, { passive: false });
 
-
 if (enterViewerButton) {
     enterViewerButton.addEventListener("click", () => {
         isViewerUnlocked = true;
@@ -617,8 +616,10 @@ function handlePolygonSelection(entity, options = {}) {
     if (!entity || entity.show === false) return;
 
     restoreSelectedPolygonVisibility();
-    blinkPolygon(entity);
-    hideSelectedPolygon(entity);
+
+    blinkPolygon(entity, () => {
+        hideSelectedPolygon(entity);
+    });
 
     renderSingleLotInfo(entity);
     focusPolygonAndLockView(entity);
@@ -743,8 +744,8 @@ window.closeInfoPanel = closeInfoPanel;
 // =========================
 // BLINK POLIGONO
 // =========================
-/*
-function blinkPolygon(entity) {
+
+function blinkPolygon(entity, onComplete) {
     if (!entity || !entity.polygon) return;
     if (entity._isBlinking) return;
 
@@ -753,7 +754,7 @@ function blinkPolygon(entity) {
     const polygon = entity.polygon;
     const now = Cesium.JulianDate.now();
 
-    let baseColor = Cesium.Color.RED.withAlpha(0.28);
+    let baseColor = Cesium.Color.BLUE.withAlpha(0.2);
 
     if (polygon.material instanceof Cesium.ColorMaterialProperty) {
         const c = polygon.material.color?.getValue(now);
@@ -777,6 +778,10 @@ function blinkPolygon(entity) {
     setTimeout(() => {
         polygon.material = originalMaterial;
         entity._isBlinking = false;
+
+        if (typeof onComplete === "function") {
+            onComplete();
+        }
     }, 420);
 }
 
@@ -824,7 +829,7 @@ function hideSelectedPolygon(entity) {
     activeSelectedPolygonEntity = entity;
     setPolygonOpacity(entity, 0.0);
 }
-*/
+
 // =========================
 // MARKER LOTTI / OVERLAY SELEZIONE
 // =========================
