@@ -12,6 +12,7 @@
     --transition: 0.28s ease;
     --panel-scroll-w: 8px;
     --panel-scroll-offset: 15px;
+    --filters-bar-h: 74px;
 }
 
 * {
@@ -107,7 +108,7 @@ video {
 }
 
 .intro-image {
-    background-image: url("assets/img/intro.png");
+    background-image: url("assets/media/index/intro.png");
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -163,7 +164,7 @@ h1 {
     }
 
 .intro-actions {
-    margin-top: 24px;
+    margin-top: 16px;
     position: relative;
     z-index: 3;
 }
@@ -173,10 +174,6 @@ h1 {
     color: rgba(255, 255, 255, 0.82);
     line-height: 1.7;
     font-size: 1.35rem;
-}
-
-.intro-actions {
-    margin-top: 16px;
 }
 
 .cta-primary {
@@ -376,6 +373,7 @@ h1 {
         color: #fff;
         border-color: rgba(153, 181, 187, 0.5);
     }
+
 /* ===== PARTNERSHIP FILTERS ===== */
 
 .partnership-filters-bar {
@@ -384,34 +382,17 @@ h1 {
     bottom: 24px;
     transform: translateX(-50%);
     z-index: 45;
-    width: max-content;
+    width: fit-content;
     max-width: calc(100vw - 48px);
     background: var(--panel);
     border: 1px solid var(--line);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 18px;
     padding: 12px 16px;
-    min-height: 74px;
-}
-
-.partnership-filters-bar {
-    position: absolute;
-    left: 120px;
-    right: 120px;
-    bottom: 28px;
-    z-index: 45;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 12px 16px;
-    min-height: 74px;
+    min-height: var(--filters-bar-h);
 }
 
 .partnership-filters-bar-title {
@@ -481,6 +462,7 @@ h1 {
         color: #fff;
         border-color: rgba(153, 181, 187, 0.5);
     }
+
 /* ===== INFO PANEL ===== */
 
 .info-panel {
@@ -489,7 +471,7 @@ h1 {
     right: 24px;
     width: 440px;
     max-width: calc(100vw - 48px);
-    max-height: calc(100svh - var(--header-h) - 24px - 24px - 74px - 32px);
+    max-height: calc(100svh - var(--header-h) - var(--filters-bar-h) - 96px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -702,57 +684,6 @@ h1 {
         font-size: 1.08rem;
     }
 
-/* ===== FILTERS ===== */
-
-.filter-bar {
-    position: absolute;
-    left: 24px;
-    right: 24px;
-    bottom: 24px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    z-index: 40;
-    padding: 14px;
-    background: var(--panel-soft);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--line);
-}
-
-    .filter-bar button {
-        min-height: 46px;
-        padding: 0 16px;
-        border: 1px solid transparent;
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--text-soft);
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: background var(--transition), color var(--transition), border-color var(--transition);
-    }
-
-        .filter-bar button:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-        }
-
-        .filter-bar button.active {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--line-strong);
-            color: #fff;
-        }
-
-        .filter-bar button.filter-inverted {
-            background: rgba(255, 255, 255, 0.72);
-            color: rgba(0, 0, 0, 0.88);
-        }
-
-            .filter-bar button.filter-inverted.active {
-                background: #fff;
-                color: #000;
-            }
-
 /* ===== HUB BUTTON ===== */
 
 .camera-home-button {
@@ -761,8 +692,8 @@ h1 {
     left: 50%;
     transform: translateX(-50%);
     z-index: 50;
-    min-height: 64px;
-    padding: 0 20px;
+    min-height: 42px;
+    padding: 0 14px;
     background: var(--panel);
     color: var(--text);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -770,6 +701,9 @@ h1 {
     -webkit-backdrop-filter: blur(14px);
     cursor: pointer;
     white-space: nowrap;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
     .camera-home-button:hover {
@@ -788,16 +722,10 @@ h1 {
         width: 320px;
     }
 
-    .partnership-filters-panel {
-        left: 360px;
-        width: 320px;
-    }
-
     .info-panel {
         width: 320px;
     }
 }
-
 
 @media (max-width: 920px) {
     .site-header {
@@ -814,22 +742,28 @@ h1 {
         width: 280px;
     }
 
-    .partnership-filters-panel {
-        top: calc(var(--header-h) + 16px);
-        left: 308px;
-        width: 280px;
+    .partnership-filters-bar {
+        bottom: 14px;
+        max-width: calc(100vw - 28px);
+        gap: 12px;
+    }
+
+    .partnership-filters-bar-title {
+        font-size: 0.72rem;
     }
 
     .info-panel {
         top: calc(var(--header-h) + 16px);
         right: 14px;
         width: 280px;
+        max-height: calc(100svh - var(--header-h) - var(--filters-bar-h) - 82px);
     }
 
     .camera-home-button {
         top: calc(var(--header-h) + 16px);
-        right: 14px;
-        min-height: 54px;
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 0.70rem;
     }
 }
 
@@ -849,15 +783,36 @@ h1 {
         width: auto;
     }
 
-    .partnership-filters-panel {
-        top: calc(var(--header-h) + 200px);
+    .operations-menu-title {
+        font-size: 0.7rem;
+    }
+
+    .partnership-filters-bar {
         left: 8px;
         right: 8px;
         width: auto;
+        max-width: none;
+        transform: translateX(0);
+        bottom: 8px;
+        min-height: auto;
+        padding: 8px;
+        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .operations-menu-title {
-        font-size: 0.7rem;
+    .partnership-filters-bar-title {
+        font-size: 0.68rem;
+    }
+
+    .partnership-filters-bar-list {
+        gap: 8px;
+    }
+
+    .partnership-filter-button {
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 0.78rem;
     }
 
     .info-panel {
@@ -865,7 +820,7 @@ h1 {
         right: 8px;
         width: auto;
         top: auto;
-        bottom: 58px;
+        bottom: 74px;
         max-height: 34vh;
         padding: 14px;
         z-index: 50;
@@ -875,17 +830,17 @@ h1 {
             font-size: 1.15rem;
         }
 
-    @media (max-width: 680px) {
-        .camera-home-button {
-            top: auto;
-            right: 8px;
-            bottom: 180px;
-            min-height: 42px;
-            padding: 0 14px;
-            font-size: 0.75rem;
-            z-index: 60;
-        }
+    .camera-home-button {
+        top: calc(var(--header-h) + 12px);
+        left: 50%;
+        bottom: auto;
+        transform: translateX(-50%);
+        min-height: 36px;
+        padding: 0 12px;
+        font-size: 0.68rem;
+        z-index: 60;
     }
+}
 
 html {
     scrollbar-width: thin;
@@ -908,4 +863,3 @@ html {
         html::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.28);
         }
-}

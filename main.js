@@ -487,6 +487,16 @@ function getAllLotti() {
     );
 }
 
+function getAllLottiForMenu() {
+    return getAllLotti().filter((entity) => {
+        if (!entity?.name || !entity.polygon) return false;
+        if (entity.name === "Aree Comuni" && entity.id !== "lotto Aree_Comuni.1") {
+            return false;
+        }
+        return true;
+    });
+}
+
 function normalizePartnershipValue(value) {
     const normalized = formatValue(value).trim();
     return normalized || "-";
@@ -497,9 +507,7 @@ function getAllPartnershipValues() {
 
     getAllLotti().forEach((entity) => {
         const value = normalizePartnershipValue(getProp(entity, "investimentiPartnership"));
-
         if (value === "-") return;
-
         uniqueValues.add(value);
     });
 
@@ -517,17 +525,10 @@ function isEntityMatchingActiveFilter(entity) {
 function getPolygonGroupsForMenu() {
     const groups = new Map();
 
-    getAllLotti().forEach((entity) => {
-        if (!entity?.name || !entity.polygon || entity.show === false) return;
-
-        if (entity.name === "Aree Comuni" && entity.id !== "lotto Aree_Comuni.1") {
-            return;
-        }
-
+    getAllLottiForMenu().forEach((entity) => {
         if (!groups.has(entity.name)) {
             groups.set(entity.name, []);
         }
-
         groups.get(entity.name).push(entity);
     });
 
@@ -538,6 +539,22 @@ function getPolygonGroupsForMenu() {
             primaryEntity: entities[0]
         }))
         .sort((a, b) => a.name.localeCompare(b.name, "it"));
+}
+
+function getEntitiesByLotName(name) {
+    return getAllLotti().filter((entity) => entity.name === name);
+}
+
+function revealLotForSelection(entity) {
+    if (!entity?.name) return;
+
+    const sameLotEntities = getEntitiesByLotName(entity.name);
+    sameLotEntities.forEach((lotEntity) => {
+        lotEntity.show = true;
+    });
+
+    refreshLotMarkersVisibility();
+    refreshSelectedLotOverlayVisibility();
 }
 
 function setOperationsMenuOpen(isOpen) {
@@ -613,8 +630,9 @@ function renderSingleLotInfo(entity) {
 }
 
 function handlePolygonSelection(entity, options = {}) {
-    if (!entity || entity.show === false) return;
+    if (!entity) return;
 
+    revealLotForSelection(entity);
     restoreSelectedPolygonVisibility();
 
     blinkPolygon(entity, () => {
@@ -692,9 +710,15 @@ function applyPartnershipFilter() {
         entity.show = isEntityMatchingActiveFilter(entity);
     });
 
+    if (activeSelectedLotName) {
+        const selectedEntities = getEntitiesByLotName(activeSelectedLotName);
+        selectedEntities.forEach((entity) => {
+            entity.show = true;
+        });
+    }
+
     refreshLotMarkersVisibility();
     refreshSelectedLotOverlayVisibility();
-    buildPolygonButtonsMenu();
 
     const selectedEntityStillVisible = getAllLotti().find((entity) => {
         return entity.name === activeSelectedLotName && entity.show !== false;
@@ -1050,17 +1074,10 @@ function applySelectedOverlayResponsiveStyles() {
 function addMarkersToAllLotti() {
     const groups = new Map();
 
-    getAllLotti().forEach((entity) => {
-        if (!entity?.name || !entity.polygon) return;
-
-        if (entity.name === "Aree Comuni" && entity.id !== "lotto Aree_Comuni.1") {
-            return;
-        }
-
+    getAllLottiForMenu().forEach((entity) => {
         if (!groups.has(entity.name)) {
             groups.set(entity.name, []);
         }
-
         groups.get(entity.name).push(entity);
     });
 
