@@ -42,6 +42,10 @@ try {
     });
 
     viewer.scene.primitives.add(googleTileset);
+    googleTileset.maximumScreenSpaceError = 20;
+    googleTileset.dynamicScreenSpaceError = true;
+    googleTileset.dynamicScreenSpaceErrorFactor = 1.5;
+    googleTileset.dynamicScreenSpaceErrorDensity = 0.002;
 } catch (error) {
     console.error("Errore nel caricamento del tileset Google:", error);
 }
@@ -632,6 +636,8 @@ function renderSingleLotInfo(entity) {
 function handlePolygonSelection(entity, options = {}) {
     if (!entity) return;
 
+    hoveredLotName = "";
+
     revealLotForSelection(entity);
     restoreSelectedPolygonVisibility();
 
@@ -643,6 +649,7 @@ function handlePolygonSelection(entity, options = {}) {
     focusPolygonAndLockView(entity);
     setSelectedLotOverlay(entity);
     setActivePolygonMenuButton(entity.name || "");
+    refreshLotMarkersVisibility();
 
     if (options.closeMenuAfterSelect !== false) {
         setOperationsMenuOpen(false);
@@ -862,6 +869,7 @@ const lotMarkerEntities = [];
 const lotSelectedOverlayEntities = [];
 let activeSelectedLotName = "";
 let activeSelectedPolygonEntity = null;
+let hoveredLotName = "";
 
 function getEntityHierarchy(entity) {
     const hierarchyProperty = entity?.polygon?.hierarchy;
@@ -951,8 +959,8 @@ function buildLotMarkerEntities(name, entities) {
     const primaryEntity = entities[0];
     const metrics = getLotTopMetrics(entities);
 
-    const baseHeight = metrics.topHeight + 0.2;
-    const markerHeight = metrics.topHeight + 42;
+    const baseHeight = 315;
+    const markerHeight = 357;
 
     const markerBasePosition = Cesium.Cartesian3.fromRadians(
         metrics.longitude,
@@ -980,7 +988,7 @@ function buildLotMarkerEntities(name, entities) {
             semiMajorAxis: 7,
             semiMinorAxis: 7,
             height: baseHeight,
-            material: Cesium.Color.fromCssColorString("#6fd3ff").withAlpha(0.14),
+            material: Cesium.Color.fromCssColorString("#6fd3ff").withAlpha(0.28),
             outline: false
         }
     });
@@ -997,9 +1005,9 @@ function buildLotMarkerEntities(name, entities) {
             semiMajorAxis: 10,
             semiMinorAxis: 10,
             height: baseHeight + 0.05,
-            material: Cesium.Color.WHITE.withAlpha(0.01),
+            material: Cesium.Color.WHITE.withAlpha(0.05),
             outline: true,
-            outlineColor: Cesium.Color.fromCssColorString("#6fd3ff").withAlpha(0.45),
+            outlineColor: Cesium.Color.fromCssColorString("#6fd3ff").withAlpha(0.80),
             outlineWidth: 1
         }
     });
@@ -1014,7 +1022,15 @@ function buildLotMarkerEntities(name, entities) {
         },
         billboard: {
             image: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(diamondSvg)}`,
-            scale: 0.60,
+            scale: new Cesium.CallbackProperty(() => {
+                const pulse = 0.60 + Math.sin(Date.now() * 0.0045) * 0.05;
+                return pulse;
+            }, false),
+
+            color: new Cesium.CallbackProperty(() => {
+                const alpha = 0.88 + Math.sin(Date.now() * 0.0045) * 0.10;
+                return Cesium.Color.WHITE.withAlpha(alpha);
+            }, false),
             verticalOrigin: Cesium.VerticalOrigin.CENTER,
             horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
@@ -1022,12 +1038,57 @@ function buildLotMarkerEntities(name, entities) {
         }
     });
 
-    [baseGlow, baseRing, diamond].forEach((markerPart) => {
+    const hoverIcon = viewer.entities.add({
+        id: `markerHoverIcon_${primaryEntity.id}`,
+        name: `${name}_marker_hover_icon`,
+        position: markerPosition,
+        show: false,
+        properties: {
+            isLotMarker: true,
+            linkedEntityId: primaryEntity.id
+        },
+        billboard: {
+            image: getProp(primaryEntity, "icona") || "assets/icons/default-marker.png",
+            scale: 0.13,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+            pixelOffset: new Cesium.Cartesian2(0, 8),
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            scaleByDistance: new Cesium.NearFarScalar(180.0, 1.2, 2200.0, 0.65)
+        }
+    });
+
+    const hoverLabel = viewer.entities.add({
+        id: `markerHoverLabel_${primaryEntity.id}`,
+        name: `${name}_marker_hover_label`,
+        position: markerPosition,
+        show: false,
+        properties: {
+            isLotMarker: true,
+            linkedEntityId: primaryEntity.id
+        },
+        label: {
+            text: name,
+            font: "600 15px Arial",
+            fillColor: Cesium.Color.WHITE,
+            outlineColor: Cesium.Color.fromCssColorString("#102030"),
+            outlineWidth: 3,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            verticalOrigin: Cesium.VerticalOrigin.TOP,
+            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+            pixelOffset: new Cesium.Cartesian2(0, 44),
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            scale: 1.0,
+            scaleByDistance: new Cesium.NearFarScalar(180.0, 1.0, 2200.0, 0.75)
+        }
+    });
+
+    [baseGlow, baseRing, diamond, hoverIcon, hoverLabel].forEach((markerPart) => {
         markerPart._linkedEntities = entities;
         markerPart._lotName = name;
     });
 
-    return { baseGlow, baseRing, diamond };
+    return { baseGlow, baseRing, diamond, hoverIcon, hoverLabel };
 }
 
 function buildSelectedLotOverlayEntity(name, entities) {
@@ -1038,7 +1099,7 @@ function buildSelectedLotOverlayEntity(name, entities) {
     const iconPosition = Cesium.Cartesian3.fromRadians(
         metrics.longitude,
         metrics.latitude,
-        metrics.topHeight + 18
+        333
     );
 
     const iconEntity = viewer.entities.add({
@@ -1098,9 +1159,22 @@ function refreshLotMarkersVisibility() {
         const linkedEntities = markerGroup.diamond?._linkedEntities || [];
         const shouldShow = linkedEntities.some(entity => entity.show !== false);
 
+        const lotName = markerGroup.diamond?._lotName || "";
+        const isSelected = !!activeSelectedLotName && lotName === activeSelectedLotName;
+        const isHovered = !isSelected && !!hoveredLotName && lotName === hoveredLotName;
+
         markerGroup.baseGlow.show = shouldShow;
         markerGroup.baseRing.show = shouldShow;
-        markerGroup.diamond.show = shouldShow;
+
+        if (markerGroup.hoverIcon) {
+            markerGroup.hoverIcon.show = shouldShow && isHovered;
+        }
+
+        if (markerGroup.hoverLabel) {
+            markerGroup.hoverLabel.show = shouldShow && isHovered;
+        }
+
+        markerGroup.diamond.show = shouldShow && !isHovered;
     });
 }
 
@@ -1125,10 +1199,10 @@ viewer.entities.add({
     name: "Palazzo Pacioli",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.680553715724734, 45.066194515764714, 315,
-            7.680024641169531, 45.06637472941949, 315,
-            7.680419284415251, 45.06693423075481, 315,
-            7.680980767577986, 45.06673813242232, 315
+            7.680553715724734, 45.066194515764714, 330,
+            7.680024641169531, 45.06637472941949, 330,
+            7.680419284415251, 45.06693423075481, 330,
+            7.680980767577986, 45.06673813242232, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1162,10 +1236,10 @@ viewer.entities.add({
     name: "Casa Vélo",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.6813577618989966, 45.06824347861252, 315,
-            7.680809660560081, 45.06845195572183, 315,
-            7.681078766649869, 45.068738979560706, 315,
-            7.681569142587408, 45.06857365903585, 315
+            7.6813577618989966, 45.06824347861252, 330,
+            7.680809660560081, 45.06845195572183, 330,
+            7.681078766649869, 45.068738979560706, 330,
+            7.681569142587408, 45.06857365903585, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1195,10 +1269,10 @@ viewer.entities.add({
     name: "Angoli",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.677751532298875, 45.068316182918814, 300,
-            7.6783465742329575, 45.068115905344634, 300,
-            7.678580187544821, 45.06842887263733, 300,
-            7.67797094993596, 45.06864785502038, 300
+            7.677751532298875, 45.068316182918814, 330,
+            7.6783465742329575, 45.068115905344634, 330,
+            7.678580187544821, 45.06842887263733, 330,
+            7.67797094993596, 45.06864785502038, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1223,10 +1297,10 @@ viewer.entities.add({
     name: "Corte Molassi",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.687116541255778, 45.077871719988856, 315,
-            7.686471933328111, 45.07805649220268, 315,
-            7.686154922005348, 45.07753015447171, 315,
-            7.6868119647134625, 45.07735059613495, 315
+            7.687116541255778, 45.077871719988856, 330,
+            7.686471933328111, 45.07805649220268, 330,
+            7.686154922005348, 45.07753015447171, 330,
+            7.6868119647134625, 45.07735059613495, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1251,13 +1325,13 @@ viewer.entities.add({
     name: "Palazzo Contemporaneo",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.66993201562417, 45.06291125676272, 320,
-            7.669576858989491, 45.06228205194891, 320,
-            7.669941770397155, 45.06214593962472, 320,
-            7.670047996531381, 45.06229323162203, 320,
-            7.670244263912098, 45.06235440165116, 320,
-            7.67043470573154, 45.062291220558706, 320,
-            7.670652820451309, 45.062616873449926, 320
+            7.66993201562417, 45.06291125676272, 330,
+            7.669576858989491, 45.06228205194891, 330,
+            7.669941770397155, 45.06214593962472, 330,
+            7.670047996531381, 45.06229323162203, 330,
+            7.670244263912098, 45.06235440165116, 330,
+            7.67043470573154, 45.062291220558706, 330,
+            7.670652820451309, 45.062616873449926, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1289,10 +1363,10 @@ viewer.entities.add({
     name: "Palazzo Dune",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.681566823732004, 45.064357336499874, 305,
-            7.681844786947655, 45.064700664973465, 305,
-            7.682176507499465, 45.064548636167046, 305,
-            7.681927460378208, 45.06424311692661, 305
+            7.681566823732004, 45.064357336499874, 330,
+            7.681844786947655, 45.064700664973465, 330,
+            7.682176507499465, 45.064548636167046, 330,
+            7.681927460378208, 45.06424311692661, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1325,10 +1399,10 @@ viewer.entities.add({
     name: "Casa Doria",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.682120690405117, 45.06418590910793, 305,
-            7.682513688725606, 45.064101626154304, 305,
-            7.682636477430582, 45.06434861024248, 305,
-            7.682230084366958, 45.06442541401784, 305
+            7.682120690405117, 45.06418590910793, 330,
+            7.682513688725606, 45.064101626154304, 330,
+            7.682636477430582, 45.06434861024248, 330,
+            7.682230084366958, 45.06442541401784, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1356,10 +1430,10 @@ viewer.entities.add({
     name: "Palazzo Ellen",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.681864849664294, 45.06569389928816, 315,
-            7.682441346225534, 45.06549735990407, 315,
-            7.682153844891726, 45.06513505384391, 315,
-            7.6816062590801195, 45.06533413668166, 315
+            7.681864849664294, 45.06569389928816, 330,
+            7.682441346225534, 45.06549735990407, 330,
+            7.682153844891726, 45.06513505384391, 330,
+            7.6816062590801195, 45.06533413668166, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1389,10 +1463,10 @@ viewer.entities.add({
     name: "Accademia 38",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.685342475223557, 45.06120802769718, 305,
-            7.685599438712176, 45.06157242005522, 305,
-            7.685072485451941, 45.061745047287616, 305,
-            7.684830559508038, 45.061393199758385, 305
+            7.685342475223557, 45.06120802769718, 330,
+            7.685599438712176, 45.06157242005522, 330,
+            7.685072485451941, 45.061745047287616, 330,
+            7.684830559508038, 45.061393199758385, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1421,35 +1495,35 @@ viewer.entities.add({
     name: "Betulle 1",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.7196593529471125, 45.18305735304931, 315,
-            7.719780022404747, 45.183259120469586, 315,
-            7.719811648675973, 45.18332981468679, 315,
-            7.719850305316958, 45.183423325413585, 315,
-            7.719907512146784, 45.183557497819805, 315,
-            7.719941102900807, 45.18366256411796, 315,
-            7.719960148846169, 45.18375980384026, 315,
-            7.720001532689547, 45.18391320972729, 315,
-            7.720009103684815, 45.18395165410968, 315,
-            7.720024144963868, 45.18402857276477, 315,
-            7.7200406874227845, 45.18411278991568, 315,
-            7.7200626062500906, 45.184224483180664, 315,
-            7.720070503860997, 45.18429585642793, 315,
-            7.7200817506052, 45.18443475089855, 315,
-            7.720098110697111, 45.18462555584223, 315,
-            7.720103011909091, 45.18469179000765, 315,
-            7.7201448585989345, 45.18474000706714, 315,
-            7.720186075651889, 45.184744078609015, 315,
-            7.7202338974689, 45.18476379767505, 315,
-            7.720283444770689, 45.18478405462445, 315,
-            7.720325869586049, 45.18482511286925, 315,
-            7.720351587405987, 45.184848037399775, 315,
-            7.720372371394186, 45.184893096194244, 315,
-            7.721506728065749, 45.18486429898128, 315,
-            7.721438644767417, 45.18458346254746, 315,
-            7.721402363562325, 45.18441556041859, 315,
-            7.721375708144242, 45.18423636154434, 315,
-            7.7211435317534685, 45.182953571526085, 315,
-            7.721055192636664, 45.18267441186636, 315
+            7.7196593529471125, 45.18305735304931, 330,
+            7.719780022404747, 45.183259120469586, 330,
+            7.719811648675973, 45.18332981468679, 330,
+            7.719850305316958, 45.183423325413585, 330,
+            7.719907512146784, 45.183557497819805, 330,
+            7.719941102900807, 45.18366256411796, 330,
+            7.719960148846169, 45.18375980384026, 330,
+            7.720001532689547, 45.18391320972729, 330,
+            7.720009103684815, 45.18395165410968, 330,
+            7.720024144963868, 45.18402857276477, 330,
+            7.7200406874227845, 45.18411278991568, 330,
+            7.7200626062500906, 45.184224483180664, 330,
+            7.720070503860997, 45.18429585642793, 330,
+            7.7200817506052, 45.18443475089855, 330,
+            7.720098110697111, 45.18462555584223, 330,
+            7.720103011909091, 45.18469179000765, 330,
+            7.7201448585989345, 45.18474000706714, 330,
+            7.720186075651889, 45.184744078609015, 330,
+            7.7202338974689, 45.18476379767505, 330,
+            7.720283444770689, 45.18478405462445, 330,
+            7.720325869586049, 45.18482511286925, 330,
+            7.720351587405987, 45.184848037399775, 330,
+            7.720372371394186, 45.184893096194244, 330,
+            7.721506728065749, 45.18486429898128, 330,
+            7.721438644767417, 45.18458346254746, 330,
+            7.721402363562325, 45.18441556041859, 330,
+            7.721375708144242, 45.18423636154434, 330,
+            7.7211435317534685, 45.182953571526085, 330,
+            7.721055192636664, 45.18267441186636, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1483,49 +1557,49 @@ viewer.entities.add({
     name: "Betulle 2",
     polygon: {
         hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
-            7.719841939983819, 45.18071376497135, 315,
-            7.71866200055144, 45.18103676104945, 315,
-            7.718617787682093, 45.18103825619338, 315,
-            7.718537778803328, 45.18102955349827, 315,
-            7.71849527267995, 45.18101303921736, 315,
-            7.71843599940826, 45.180975339554365, 315,
-            7.718317803871925, 45.180912592414444, 315,
-            7.718059074210685, 45.180707663606114, 315,
-            7.717924207207346, 45.180592702490884, 315,
-            7.717844990799606, 45.18054354376526, 315,
-            7.71772186262885, 45.18047490115032, 315,
-            7.717615626488032, 45.18042048480184, 315,
-            7.7174459577284065, 45.1803320013775, 315,
-            7.7173206669902745, 45.18027288704596, 315,
-            7.717197814280216, 45.18021303701967, 315,
-            7.717079369073502, 45.18017311730605, 315,
-            7.716996863222489, 45.180144524924685, 315,
-            7.717095708505585, 45.17982945195777, 315,
-            7.717171201457099, 45.17965818121151, 315,
-            7.717222437362741, 45.179426505478375, 315,
-            7.717237878341116, 45.17930972026463, 315,
-            7.71726330613814, 45.17919593400195, 315,
-            7.717300986597008, 45.179092388723845, 315,
-            7.71729632754488, 45.17895837632175, 315,
-            7.717295355054543, 45.1788807830123, 315,
-            7.717260574378268, 45.17880813746501, 315,
-            7.717296570425615, 45.17876379364835, 315,
-            7.717349159429455, 45.17874920554517, 315,
-            7.717469724222185, 45.17877959512973, 315,
-            7.717572135091958, 45.17879565719509, 315,
-            7.717671335771197, 45.17881572145123, 315,
-            7.7177542224323314, 45.178839144651946, 315,
-            7.717836356607362, 45.17885102238529, 315,
-            7.717938983379119, 45.178881917330436, 315,
-            7.718053889239331, 45.17891424646855, 315,
-            7.718152792303451, 45.178945007874525, 315,
-            7.718287334954889, 45.178990871038714, 315,
-            7.718427374231812, 45.179044749963474, 315,
-            7.718570503509988, 45.17910337417436, 315,
-            7.718721014987454, 45.17916788204561, 315,
-            7.718851911206131, 45.1792290334548, 315,
-            7.7189586154438725, 45.17929427475745, 315,
-            7.719037993440974, 45.17933901781094, 315
+            7.719841939983819, 45.18071376497135, 330,
+            7.71866200055144, 45.18103676104945, 330,
+            7.718617787682093, 45.18103825619338, 330,
+            7.718537778803328, 45.18102955349827, 330,
+            7.71849527267995, 45.18101303921736, 330,
+            7.71843599940826, 45.180975339554365, 330,
+            7.718317803871925, 45.180912592414444, 330,
+            7.718059074210685, 45.180707663606114, 330,
+            7.717924207207346, 45.180592702490884, 330,
+            7.717844990799606, 45.18054354376526, 330,
+            7.71772186262885, 45.18047490115032, 330,
+            7.717615626488032, 45.18042048480184, 330,
+            7.7174459577284065, 45.1803320013775, 330,
+            7.7173206669902745, 45.18027288704596, 330,
+            7.717197814280216, 45.18021303701967, 330,
+            7.717079369073502, 45.18017311730605, 330,
+            7.716996863222489, 45.180144524924685, 330,
+            7.717095708505585, 45.17982945195777, 330,
+            7.717171201457099, 45.17965818121151, 330,
+            7.717222437362741, 45.179426505478375, 330,
+            7.717237878341116, 45.17930972026463, 330,
+            7.71726330613814, 45.17919593400195, 330,
+            7.717300986597008, 45.179092388723845, 330,
+            7.71729632754488, 45.17895837632175, 330,
+            7.717295355054543, 45.1788807830123, 330,
+            7.717260574378268, 45.17880813746501, 330,
+            7.717296570425615, 45.17876379364835, 330,
+            7.717349159429455, 45.17874920554517, 330,
+            7.717469724222185, 45.17877959512973, 330,
+            7.717572135091958, 45.17879565719509, 330,
+            7.717671335771197, 45.17881572145123, 330,
+            7.7177542224323314, 45.178839144651946, 330,
+            7.717836356607362, 45.17885102238529, 330,
+            7.717938983379119, 45.178881917330436, 330,
+            7.718053889239331, 45.17891424646855, 330,
+            7.718152792303451, 45.178945007874525, 330,
+            7.718287334954889, 45.178990871038714, 330,
+            7.718427374231812, 45.179044749963474, 330,
+            7.718570503509988, 45.17910337417436, 330,
+            7.718721014987454, 45.17916788204561, 330,
+            7.718851911206131, 45.1792290334548, 330,
+            7.7189586154438725, 45.17929427475745, 330,
+            7.719037993440974, 45.17933901781094, 330
         ]),
         material: new Cesium.ColorMaterialProperty(
             Cesium.Color.BLUE.withAlpha(0.2)
@@ -1571,17 +1645,9 @@ applyPartnershipFilter();
 refreshLotMarkersVisibility();
 refreshSelectedLotOverlayVisibility();
 
-// =========================
-// CLICK LOTTI
-// =========================
-
-const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-
-handler.setInputAction((movement) => {
-    const pickedObject = viewer.scene.pick(movement.position);
-
+function resolveInteractiveLotEntity(pickedObject) {
     if (!Cesium.defined(pickedObject) || !Cesium.defined(pickedObject.id)) {
-        return;
+        return null;
     }
 
     let entity = pickedObject.id;
@@ -1601,6 +1667,46 @@ handler.setInputAction((movement) => {
     }
 
     if (entity.polygon && Cesium.defined(entity.properties) && entity.show !== false) {
+        return entity;
+    }
+
+    return null;
+}
+
+// =========================
+// CLICK LOTTI
+// =========================
+
+const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+const hoverHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+hoverHandler.setInputAction((movement) => {
+    const pickedObject = viewer.scene.pick(movement.endPosition);
+    const hoveredEntity = resolveInteractiveLotEntity(pickedObject);
+
+    if (hoveredEntity) {
+        const hoveredName = hoveredEntity.name || "";
+
+        if (activeSelectedLotName && hoveredName === activeSelectedLotName) {
+            hoveredLotName = "";
+        } else {
+            hoveredLotName = hoveredName;
+        }
+
+        viewer.scene.canvas.style.cursor = "pointer";
+    } else {
+        hoveredLotName = "";
+        viewer.scene.canvas.style.cursor = "default";
+    }
+
+    refreshLotMarkersVisibility();
+}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+handler.setInputAction((movement) => {
+    const pickedObject = viewer.scene.pick(movement.position);
+    const entity = resolveInteractiveLotEntity(pickedObject);
+
+    if (entity) {
         handlePolygonSelection(entity, { closeMenuAfterSelect: false });
     }
 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
