@@ -1491,6 +1491,38 @@ viewer.entities.add({
 });
 
 viewer.entities.add({
+    id: "Castello",
+    name: "Castello",
+    polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+            7.686157343797318, 45.06972998332307, 330,
+            7.686302800460706, 45.06969425908732, 330,
+            7.686322340818266, 45.0697264921273, 330,
+            7.686465710331682, 45.06967792545052, 330,
+            7.686493604425246, 45.06970782723379, 330,
+            7.6866678983906676, 45.06963950067883, 330,
+            7.686754219816663, 45.06975959503271, 330,
+            7.686295619184904, 45.06991616039741, 330
+        ]),
+        material: new Cesium.ColorMaterialProperty(
+            Cesium.Color.BLUE.withAlpha(0.2)
+        ),
+        perPositionHeight: true,
+        extrudedHeight: 280,
+        outline: false
+    },
+    properties: {
+        immagine: "assets/img/castello.jpg",
+        investimentiPartnership: "Prop trading, Local Co-Investor",
+        surface: " - m²",
+        apartments: " -",
+        trackRecord: " - €",
+        icona: "assets/icons/castello.png",
+        descrizione: `-.`
+    }
+});
+
+viewer.entities.add({
     id: "Betulle1",
     name: "Betulle 1",
     polygon: {
