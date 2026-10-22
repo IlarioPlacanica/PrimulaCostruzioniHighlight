@@ -1284,9 +1284,9 @@ viewer.entities.add({
     properties: {
         immagine: "assets/img/alfieri.png",
         investimentiPartnership: "-",
-        surface: " - m²",
-        apartments: " -",
-        trackRecord: " - €",
+        surface: " 1.339 m²",
+        apartments: " 17",
+        trackRecord: " 8.100.000 €",
         icona: "assets/icons/angoli.png",
         descrizione: `-.`
     }
@@ -1310,11 +1310,11 @@ viewer.entities.add({
         outline: false
     },
     properties: {
-        immagine: "assets/img/molassi.jpg",
+        immagine: "assets/img/molassi.PNG",
         investimentiPartnership: "-",
-        surface: " - m²",
-        apartments: " -",
-        trackRecord: " - €",
+        surface: " 4.558 m²",
+        apartments: " 68",
+        trackRecord: " 14.586.000 €",
         icona: "assets/icons/molassi.png",
         descrizione: `-.`
     }
@@ -1514,9 +1514,9 @@ viewer.entities.add({
     properties: {
         immagine: "assets/img/castello.jpg",
         investimentiPartnership: "Prop trading, Local Co-Investor",
-        surface: " - m²",
-        apartments: " -",
-        trackRecord: " - €",
+        surface: " 1.455 m²",
+        apartments: " 6",
+        trackRecord: " 11.428.000 €",
         icona: "assets/icons/castello.png",
         descrizione: `-.`
     }
